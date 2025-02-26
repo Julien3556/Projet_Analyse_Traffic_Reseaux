@@ -1,7 +1,6 @@
 import pandas as pd
 
-# columns = ['ts','uid','id.orig_h','id.orig_p','id.resp_h','id.resp_p','proto','service','duration','orig_bytes','resp_bytes','conn_state','local_orig','missed_bytes','history','orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample']
-# dataFrame = pd.read_csv("conn_sample.log", sep="\s+", names=columns)
+
 
 
 class Scans :
@@ -37,15 +36,21 @@ class Scans :
             print("Prise en compte uniquement des requêtes rejetées")
         else :
             print("Prise en compte des requêtes rejetées et non rejetées")
-            
-        scan_attempts = self.dataFrame.groupby("id.orig_h").size()
+            scan_attempts = self.dataFrame.groupby("id.orig_h").size()
+        
         try :
             seuil = int(input("\n Nombre de tentatives rejetées (int) : ")) # Seuil
             scan_attempts = scan_attempts[scan_attempts > seuil]  
             print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", scan_attempts.size, "\n")
-        except:
+        except ValueError :
             print("Erreur vous devez utiliser un entier.")
-
+            
+if __name__ == '__main__':
+    columns = ['ts','uid','id.orig_h','id.orig_p','id.resp_h','id.resp_p','proto','service','duration','orig_bytes','resp_bytes','conn_state','local_orig','missed_bytes','history','orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample']
+    dataFrame = pd.read_csv("conn_sample.log", sep="\s+", names=columns)
+    scan = sp.Scans(dataFrame)
+    scan.scans()
+    scan.scans2()
 
 
         

@@ -37,6 +37,6 @@ def convert_data(file):
     else:
         raise ValueError('Unsupported file type')
 
-# if __name__ == '__main__':
-#     data = convert_data('conn_sample.log')
-#     print(data.sample(20))
+if __name__ == '__main__':
+    data = convert_data('conn_sample.log')
+    print(data.sample(20))

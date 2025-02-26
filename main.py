@@ -2,6 +2,7 @@
 import pandas as pd
 import detect_scan_port as sp
 import parse_data as pa
+import detect_http_suspect as d
 
 # Définition des noms de colonnes
 columns = [
@@ -20,7 +21,7 @@ file = 'conn_sample.log'
 
 if __name__ == "__main__" :
     while True:
-        print("\n===Commandes possibles=== \n\n1-select_file (select) \n2-afficher \n3-scans de ports (sp) \n4-scans de ports2 (sp2) \n5-convert_data (convert)")
+        print("\n===Commandes possibles=== \n\n1-Select file (select) \n2-Afficher les loges (afficher) \n3-Scans de ports (sp) \n4-Scans de ports2 (sp2) \n5-Convertisseur de data (convert) \n6-Detection http suspecte (http)")
         commandes = input(">>> : ")
         
         if commandes == "quitter" or commandes == "q":
@@ -30,20 +31,23 @@ if __name__ == "__main__" :
         elif commandes == "afficher":
             print(dataFrame.head())
             
-        elif commandes == "select_file" or commandes == "select":
+        elif commandes == "select":
             file = input("File name : ")
             
-        elif commandes == "scans de ports" or commandes == "sp":
+        elif commandes == "sp":
             scan = sp.Scans(dataFrame)
             scan.scans()
 
-        elif commandes == "scans de ports2" or commandes == "sp2":
+        elif commandes == "sp2":
             scan2 = sp.Scans(dataFrame)
             scan2.scans2()
             
-        elif commandes == "convert_data" or commandes == "convert":
+        elif commandes == "convert":
             data = pa.convert_data(file)
             print(data.sample(20))
+            
+        elif commandes == "http":
+            d.detect(dataFrame)   
     
         else:
             print("Erreur de commande")
