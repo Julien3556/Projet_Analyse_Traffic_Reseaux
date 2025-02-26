@@ -20,7 +20,7 @@ file = 'conn_sample.log'
 
 if __name__ == "__main__" :
     while True:
-        print("\n\Commandes possibles : \nselect_file (select), \nafficher, \nscans de ports (sp), \nscans de ports2 (sp2), \nconvert_data (convert)")
+        print("\n\Commandes possibles : \n\nselect_file (select), \nafficher, \nscans de ports (sp), \nscans de ports2 (sp2), \nconvert_data (convert)")
         commandes = input(">>> : ")
         
         if commandes == "quitter" or commandes == "q":
