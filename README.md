@@ -3,12 +3,17 @@ Les fichiers PCAP enregistrent le trafic réseau. Ces fichiers s'avèrent utiles
 statistiques du trafic réseau.
 
 Travail demandé :
-• Analyser des fichiers PCAP en utilisant python.
-• Générer des courbes, graphiques à barres etc.
-• Implémenter différentes méthodes pour détecter les malwares à partir des fichiers de journaux.
+
+• Analyser des fichiers PCAP en utilisant python
+
+• Générer des courbes, graphiques à barres etc...
+
+• Implémenter différentes méthodes pour détecter les malwares à partir des fichiers de journaux
 
 Délivrables :
+
 • Rapport et annexes du projet ;
+
 • Archive de l'ensemble du projet permettant sa reprise.
 
 Ressources :
