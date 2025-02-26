@@ -16,3 +16,6 @@ Ressources :
 Analysis
 • Analysing network traffic with Pandas,
 https://notebook.community/dloss/notebooks/NetworkTraffic-Pandas
+• Comprendre le format pcap : https://www.ipxo.com/blog/pcap-network-analysis/
+• Comprendre comment analyser des fichiers pcap et quelles informations on peut obtenir, comme expliqué dans ce lien : https://vnetman.github.io/pcap/python/pyshark/scapy/libpcap/2018/10/25/analyzing-packet-captures-with-python-part-1.html
+• Utiliser l'analyse de pcap pour la forensique réseau : par exemple, détecter les malwares, comme expliqué dans ce lien : https://cylab.be/blog/245/network-traffic-analysis-with-python-scapy-and-some-machine-learning
