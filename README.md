@@ -21,8 +21,7 @@ Délivrables :
 
 Ressources :
 
-• Network-Log-and-Traffic-Analysis, https://github.com/alexamanpreet/Network-Log-and-Traffic-
-Analysis
+• Network-Log-and-Traffic-Analysis, https://github.com/alexamanpreet/Network-Log-and-Traffic-Analysis
 
 • Analysing network traffic with Pandas,
 https://notebook.community/dloss/notebooks/NetworkTraffic-Pandas
