@@ -39,7 +39,13 @@ class Scans :
             print("Prise en compte des requêtes rejetées et non rejetées")
             
         scan_attempts = self.dataFrame.groupby("id.orig_h").size()
-        seuil = int(input("\n Nombre de tentatives rejetées (int) : ")) # Seuil
-        scan_attempts = scan_attempts[scan_attempts > seuil]  
+        try :
+            seuil = int(input("\n Nombre de tentatives rejetées (int) : ")) # Seuil
+            scan_attempts = scan_attempts[scan_attempts > seuil]  
+            print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", scan_attempts.size, "\n")
+        except:
+            print("Erreur vous devez utiliser un entier.")
 
-        print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", scan_attempts.size, "\n")
+
+
+        
