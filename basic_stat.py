@@ -11,7 +11,7 @@ columns = [
 ]
 
 # Chargement du fichier de logs dans un DataFrame pandas
-dataFrame = pd.read_csv("conn_sample.log", sep="\s+", names=columns)
+dataFrame = pd.read_csv("data/conn_sample.log", sep="\s+", names=columns)
 
 # Comptage du nombre de ports distincts contactés par chaque adresse IP source (id.orig_h)
 port_scan_attempts = dataFrame.groupby("id.orig_h")["id.resp_p"].nunique()

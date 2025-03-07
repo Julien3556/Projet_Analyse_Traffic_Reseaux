@@ -1,3 +1,4 @@
+# Importation des bibliothèques nécessaires
 import pandas as pd
 def scans(dataFrame):
     port_scan_attempts = dataFrame.groupby("id.orig_h")["id.resp_p"].nunique() # Tableau qui comprend un grand nb de connexions
