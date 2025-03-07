@@ -8,10 +8,10 @@ class Scans :
         print("test")
         
     def scans(self):
-        port_scan_attempts = self.dataFrame.groupby("id.orig_h")["id.resp_p"].nunique() #Tableau grand nb de connexions
+        port_scan_attempts = self.dataFrame.groupby("id.orig_h")["id.resp_p"].nunique() # Tableau grand nb de connexions
         suspected_scanners = port_scan_attempts[port_scan_attempts > 50]
 
-        rejected_connections = self.dataFrame[self.dataFrame["conn_state"] == "REJ"] #Tableau de connexions rejetés
+        rejected_connections = self.dataFrame[self.dataFrame["conn_state"] == "REJ"] # Tableau de connexions rejetés
         connections_rejected = rejected_connections.groupby("id.orig_h").size()
 
 
