@@ -2,7 +2,7 @@
 import pandas as pd  
 import matplotlib.pyplot as plt  
 
-def ip_nbPort(dataFrame):
+def ip_nbPort(dataFrame, local:bool):
     # Comptage du nombre de ports distincts contactés par chaque adresse IP source (id.orig_h)
     port_scan_attempts = dataFrame.groupby("id.orig_h")["id.resp_p"].nunique()
 
@@ -10,7 +10,8 @@ def ip_nbPort(dataFrame):
     # Création du graphique
     limit = int(input("Select the minimum number of ports : "))
     port_scan_attempts = port_scan_attempts[port_scan_attempts > limit]
-    print(port_scan_attempts[0][0])
+    if(local):
+        port_scan_attempts.index = port_scan_attempts.index.str[12:]
     port_scan_attempts.plot(kind="bar", color="skyblue", edgecolor="black")
 
     # Ajout des labels et du titre au graphique
@@ -35,5 +36,5 @@ if __name__ == '__main__':
     ]
     # Chargement du fichier de logs dans un DataFrame pandas
     dataFrame = pd.read_csv("./data/conn_sample.log", sep="\s+", names=columns)
-    ip_nbPort(dataFrame)
+    ip_nbPort(dataFrame, True)
 
