@@ -1,11 +1,11 @@
 # Importation des bibliothèques nécessaires
 import pandas as pd
 def scans(dataFrame):
-    port_scan_attempts = dataFrame.groupby("id.orig_h")["id.resp_p"].nunique() # Tableau qui comprend un grand nb de connexions
+    port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique() # Tableau qui comprend un grand nb de connexions
     suspected_scanners = port_scan_attempts[port_scan_attempts > 50]
 
     rejected_connections = dataFrame[dataFrame["conn_state"] == "REJ"] # Tableau qui comprend les connexions rejetés
-    connections_rejected = rejected_connections.groupby("id.orig_h").size()
+    connections_rejected = rejected_connections.groupby("src").size()
 
 
     fusion = port_scan_attempts.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
@@ -19,12 +19,12 @@ def scans(dataFrame):
     print(len(suspected_scanners))
     """
             
-if __name__ == '__main__':
-    columns = ['ts','uid','id.orig_h','id.orig_p','id.resp_h','id.resp_p','proto','service','duration','orig_bytes','resp_bytes','conn_state','local_orig','missed_bytes','history','orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample']
-    dataFrame = pd.read_csv("conn_sample.log", sep="\s+", names=columns)
-    scan = sp.Scans(dataFrame)
-    scan.scans()
-    scan.scans2()
+# if __name__ == '__main__':
+#     columns = ['ts','uid','id.orig_h','id.orig_p','id.resp_h','id.resp_p','proto','service','duration','orig_bytes','resp_bytes','conn_state','local_orig','missed_bytes','history','orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample']
+#     dataFrame = pd.read_csv("conn_sample.log", sep="\s+", names=columns)
+#     scan = sp.Scans(dataFrame)
+#     scan.scans()
+#     scan.scans2()
 
 
         
