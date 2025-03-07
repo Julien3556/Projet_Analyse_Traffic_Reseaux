@@ -3,6 +3,7 @@ import pandas as pd
 import detect_scan_port as sp
 import parse_data as pa
 import detect_http_suspect as d
+import os
 
 # Définition des noms de colonnes
 columns = [
@@ -12,7 +13,7 @@ columns = [
 ]
 
 # Charger les logs dans un DataFrame
-dataFrame = pd.read_csv("conn_sample.log", sep="\t", names=columns, engine="python")
+dataFrame = pd.read_csv("data/conn_sample.log", sep="\t", names=columns, engine="python")
 
 # Correction du format timestamp
 dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
@@ -21,33 +22,43 @@ file = 'conn_sample.log'
 
 if __name__ == "__main__" :
     while True:
-        print("\n===Commandes possibles=== \n\n1-Select file (select) \n2-Afficher les loges (afficher) \n3-Scans de ports (sp) \n4-Scans de ports2 (sp2) \n5-Convertisseur de data (convert) \n6-Detection http suspecte (http)")
+        print("\n===Commandes possibles=== \n\n1-Select file (select) \n2-Afficher les logs (print) \n3-Scans de ports (sp) \n \n5-Convertisseur de data (convert) \n6-Detection http suspecte (http)")
         commandes = input(">>> : ")
         
-        if commandes == "quitter" or commandes == "q":
-            print("Déconnexion réussie")
-            break
-        
-        elif commandes == "afficher":
-            print(dataFrame.head())
+        match commandes.lower():
+            case "quitter" | "q":
+                print("Déconnexion réussie")
+                break
             
-        elif commandes == "select":
-            file = input("File name : ")
-            
-        elif commandes == "sp":
-            scan = sp.Scans(dataFrame)
-            scan.scans()
+            case "afficher":
+                print(dataFrame.head())
 
-        elif commandes == "sp2":
-            scan2 = sp.Scans(dataFrame)
-            scan2.scans2()
-            
-        elif commandes == "convert":
-            data = pa.convert_data(file)
-            print(data.sample(20))
-            
-        elif commandes == "http":
-            d.detect(dataFrame)   
-    
-        else:
-            print("Erreur de commande")
+            case "select":
+                repertoire = "data"
+
+                print("Vous avez tous ces fichiers dans le répertoire data : ")
+                
+                for fichier in os.listdir(repertoire):
+                    if fichier.endswith(".pcap") or fichier.endswith(".log"):
+                        print(fichier)
+                        
+                buffer_file = input("File name : ")
+                buffer_file = "data/" + buffer_file
+                if os.path.isfile(buffer_file):
+                    file = buffer_file
+                    print("Le fichier a bien été pris en compte")
+                else:
+                    print("Le fichier n'existe pas.")
+
+            case "sp":
+                sp.scans(dataFrame)
+
+            case "convert":
+                data = pa.convert_data(file)
+                print(data.sample(20))
+
+            case "http":
+                d.detect(dataFrame)
+
+            case _:
+                print("Erreur de commande")

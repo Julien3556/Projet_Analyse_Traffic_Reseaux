@@ -1,46 +1,22 @@
 import pandas as pd
+def scans(dataFrame):
+    port_scan_attempts = dataFrame.groupby("id.orig_h")["id.resp_p"].nunique() # Tableau qui comprend un grand nb de connexions
+    suspected_scanners = port_scan_attempts[port_scan_attempts > 50]
 
-class Scans :
-    def __init__(self, dataFrame):
-        self.dataFrame = dataFrame
-        
-    def test(self):
-        print("test")
-        
-    def scans(self):
-        port_scan_attempts = self.dataFrame.groupby("id.orig_h")["id.resp_p"].nunique() # Tableau grand nb de connexions
-        suspected_scanners = port_scan_attempts[port_scan_attempts > 50]
-
-        rejected_connections = self.dataFrame[self.dataFrame["conn_state"] == "REJ"] # Tableau de connexions rejetés
-        connections_rejected = rejected_connections.groupby("id.orig_h").size()
+    rejected_connections = dataFrame[dataFrame["conn_state"] == "REJ"] # Tableau qui comprend les connexions rejetés
+    connections_rejected = rejected_connections.groupby("id.orig_h").size()
 
 
-        fusion = port_scan_attempts.index.intersection(connections_rejected.index)
-        print(list(fusion))
+    fusion = port_scan_attempts.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
+    print(list(fusion))
 
-        print("IPs suspectées de scan de ports: ")
-        
-        print(fusion)
-        print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", fusion.size, "\n")
-        """
-        print(len(suspected_scanners))
-        """
-    def scans2(self):
-        rej = input("\n Connexions rejetées uniquement (True ou False) : ")
-
-        if rej == "True":
-            scan_attempts = self.dataFrame[self.dataFrame["conn_state"] == "REJ"].groupby("id.orig_h").size()
-            print("Prise en compte uniquement des requêtes rejetées")
-        else :
-            print("Prise en compte des requêtes rejetées et non rejetées")
-            scan_attempts = self.dataFrame.groupby("id.orig_h").size()
-        
-        try :
-            seuil = int(input("\n Nombre de tentatives rejetées (int) : ")) # Seuil
-            scan_attempts = scan_attempts[scan_attempts > seuil]  
-            print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", scan_attempts.size, "\n")
-        except ValueError :
-            print("Erreur vous devez utiliser un entier.")
+    print("IPs suspectées de scan de ports: ")
+    
+    print(fusion)
+    print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", fusion.size, "\n")
+    """
+    print(len(suspected_scanners))
+    """
             
 if __name__ == '__main__':
     columns = ['ts','uid','id.orig_h','id.orig_p','id.resp_h','id.resp_p','proto','service','duration','orig_bytes','resp_bytes','conn_state','local_orig','missed_bytes','history','orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample']
