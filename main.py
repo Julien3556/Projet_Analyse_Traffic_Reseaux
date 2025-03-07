@@ -1,4 +1,4 @@
-# Importation
+# Importation des bibliothèques nécessaires
 import pandas as pd
 import detect_scan_port as sp
 import parse_data as pa
@@ -12,13 +12,30 @@ columns = [
     'orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample'
 ]
 
-# Charger les logs dans un DataFrame
-dataFrame = pd.read_csv("data/conn_sample.log", sep="\t", names=columns, engine="python")
-
-# Correction du format timestamp
-dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
-
 file = 'conn_sample.log'
+
+"""
+Documentation du code
+
+Ce code utilise la structure match-case pour exécuter différentes commandes en fonction de l'entrée utilisateur.
+
+Commandes possibles :
+- quitter | q : Permet de quitter le programme en affichant un message de déconnexion.
+- afficher : Affiche les premières lignes du DataFrame.
+- select : Permet à l'utilisateur de sélectionner un fichier en saisissant son nom.
+- sp : Effectue un scan de ports sur les données du DataFrame via la classe Scans.
+- sp2 : Effectue une autre version du scan de ports.
+- convert : Convertit les données du fichier sélectionné et affiche un échantillon de 20 lignes.
+- http : Détecte les activités HTTP suspectes dans le DataFrame.
+- _ : Affiche un message d'erreur si la commande est inconnue.
+
+Dépendances :
+- pandas (pd) pour la manipulation des données
+- sp pour les scans de ports
+- pa pour la conversion des données
+- d pour la détection HTTP
+
+"""
 
 if __name__ == "__main__" :
     while True:
@@ -46,11 +63,15 @@ if __name__ == "__main__" :
                 buffer_file = "data/" + buffer_file
                 if os.path.isfile(buffer_file):
                     file = buffer_file
-                    print("Le fichier a bien été pris en compte")
+                    print("Le fichier a bien été pris en compte.")
                 else:
                     print("Le fichier n'existe pas.")
 
             case "sp":
+                # Charger les logs dans un DataFrame
+                dataFrame = pd.read_csv("data/"+file, sep="\t", names=columns, engine="python")
+                # Correction du format timestamp
+                dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
                 sp.scans(dataFrame)
 
             case "convert":
@@ -61,4 +82,4 @@ if __name__ == "__main__" :
                 d.detect(dataFrame)
 
             case _:
-                print("Erreur de commande")
+                print("Erreur de commande.")
