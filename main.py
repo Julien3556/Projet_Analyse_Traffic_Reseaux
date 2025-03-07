@@ -12,7 +12,12 @@ columns = [
     'orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample'
 ]
 
-file = 'conn_sample.log'
+# Fichier par défaut :
+file = 'data/conn_sample.log'
+
+# Initialisation d'un dataFrame
+dataFrame = pd.DataFrame()
+print(dataFrame)
 
 """
 Documentation du code
@@ -41,7 +46,9 @@ if __name__ == "__main__" :
     while True:
         print("\n===Commandes possibles=== \n\n1-Select file (select) \n2-Afficher les logs (print) \n3-Scans de ports (sp) \n \n5-Convertisseur de data (convert) \n6-Detection http suspecte (http)")
         commandes = input(">>> : ")
-        
+        if dataFrame.empty:
+            print("Le dataFrame est vide")
+            print("Utiliser la commande select pour sélectionner un fichier ou convert pour convertir un fichier pcap")
         match commandes.lower():
             case "quitter" | "q":
                 print("Déconnexion réussie")
@@ -52,7 +59,6 @@ if __name__ == "__main__" :
 
             case "select":
                 repertoire = "data"
-
                 print("Vous avez tous ces fichiers dans le répertoire data : ")
                 
                 for fichier in os.listdir(repertoire):
@@ -68,10 +74,10 @@ if __name__ == "__main__" :
                     print("Le fichier n'existe pas.")
 
             case "sp":
-                # Charger les logs dans un DataFrame
-                dataFrame = pd.read_csv("data/"+file, sep="\t", names=columns, engine="python")
-                # Correction du format timestamp
-                dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
+                # # Charger les logs dans un DataFrame
+                # dataFrame = pd.read_csv("data/"+file, sep="\t", names=columns, engine="python")
+                # # Correction du format timestamp
+                # dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
                 sp.scans(dataFrame)
 
             case "convert":

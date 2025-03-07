@@ -39,5 +39,5 @@ def convert_data(file):
         raise ValueError('Unsupported file type')
 
 if __name__ == '__main__':
-    data = convert_data('conn_sample.log')
+    data = convert_data('data/conn_sample.log')
     print(data.sample(20))
