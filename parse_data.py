@@ -14,9 +14,9 @@ def parse_pcap(file):
             timestamp = package.sniff_time
             src_port = int(package[package.transport_layer].srcport) if hasattr(package, package.transport_layer) else None
             dst_port = int(package[package.transport_layer].dstport) if hasattr(package, package.transport_layer) else None
-            tcp_flags = package.tcp.flags if 'TCP' in package else None
-            data.append([src, dst, proto, length, timestamp, src_port, dst_port, tcp_flags])
-    return pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'tcp_flags'])
+            conn_state = package.tcp.flags if 'TCP' in package else None
+            data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state])
+    return pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state'])
 
 def parse_log(file):
     columns = ['ts', 'uid', 'id.orig_h', 'id.orig_p', 'id.resp_h', 'id.resp_p', 'proto', 'service', 'duration', 'orig_bytes', 'resp_bytes', 'conn_state', 'local_orig', 'missed_bytes', 'history', 'orig_pkts', 'orig_ip_bytes', 'resp_pkts', 'resp_ip_bytes', 'tunnel_parents', 'threat', 'sample']
