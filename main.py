@@ -34,22 +34,22 @@ if __name__ == "__main__" :
                 print(dataFrame.head())
 
             case "select":
-                repertoire = "dossier"
-                extension = ".pcap"
+                # repertoire = "dossier"
+                # extension = ".pcap"
 
                 print("Vous avez tous ces fichiers : ")
                 
-                for fichier in os.listdir(repertoire):
-                    if fichier.endswith(extension):
-                        print(fichier)
+                # for fichier in os.listdir(repertoire):
+                #     if fichier.endswith(extension):
+                #         print(fichier)
                         
-                buffer_file = input("File name : ")
+                # buffer_file = input("File name : ")
                 
-                if os.path.isfile(buffer_file):
-                    file = buffer_file
-                    print("Le fichier a bien été pris en compte")
-                else:
-                    print("Le fichier n'existe pas.")
+                # if os.path.isfile(buffer_file):
+                #     file = buffer_file
+                #     print("Le fichier a bien été pris en compte")
+                # else:
+                #     print("Le fichier n'existe pas.")
 
             case "sp":
                 sp.scans(dataFrame)
