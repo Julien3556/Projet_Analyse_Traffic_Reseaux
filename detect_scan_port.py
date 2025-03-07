@@ -1,8 +1,5 @@
 import pandas as pd
 
-
-
-
 class Scans :
     def __init__(self, dataFrame):
         self.dataFrame = dataFrame
