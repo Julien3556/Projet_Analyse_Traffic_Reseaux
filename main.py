@@ -12,12 +12,6 @@ columns = [
     'orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample'
 ]
 
-# Charger les logs dans un DataFrame
-dataFrame = pd.read_csv("data/conn_sample.log", sep="\t", names=columns, engine="python")
-
-# Correction du format timestamp
-dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
-
 file = 'conn_sample.log'
 
 if __name__ == "__main__" :
@@ -46,11 +40,15 @@ if __name__ == "__main__" :
                 buffer_file = "data/" + buffer_file
                 if os.path.isfile(buffer_file):
                     file = buffer_file
-                    print("Le fichier a bien été pris en compte")
+                    print("Le fichier a bien été pris en compte.")
                 else:
                     print("Le fichier n'existe pas.")
 
             case "sp":
+                # Charger les logs dans un DataFrame
+                dataFrame = pd.read_csv("data/"+file, sep="\t", names=columns, engine="python")
+                # Correction du format timestamp
+                dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
                 sp.scans(dataFrame)
 
             case "convert":
@@ -61,4 +59,4 @@ if __name__ == "__main__" :
                 d.detect(dataFrame)
 
             case _:
-                print("Erreur de commande")
+                print("Erreur de commande.")
