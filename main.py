@@ -13,7 +13,7 @@ columns = [
 ]
 
 # Charger les logs dans un DataFrame
-dataFrame = pd.read_csv("conn_sample.log", sep="\t", names=columns, engine="python")
+dataFrame = pd.read_csv("data/conn_sample.log", sep="\t", names=columns, engine="python")
 
 # Correction du format timestamp
 dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
@@ -34,17 +34,16 @@ if __name__ == "__main__" :
                 print(dataFrame.head())
 
             case "select":
-                repertoire = "dossier"
-                extension = ".pcap"
+                repertoire = "data"
 
-                print("Vous avez tous ces fichiers : ")
+                print("Vous avez tous ces fichiers dans le répertoire data : ")
                 
                 for fichier in os.listdir(repertoire):
-                    if fichier.endswith(extension):
+                    if fichier.endswith(".pcap") or fichier.endswith(".log"):
                         print(fichier)
                         
                 buffer_file = input("File name : ")
-                
+                buffer_file = "data/" + buffer_file
                 if os.path.isfile(buffer_file):
                     file = buffer_file
                     print("Le fichier a bien été pris en compte")
