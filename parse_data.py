@@ -14,8 +14,9 @@ def parse_pcap(file):
             src_port = int(package[package.transport_layer].srcport) if package.transport_layer else None
             dst_port = int(package[package.transport_layer].dstport) if package.transport_layer else None
             conn_state = package.tcp.flags if 'TCP' in package else None
-            data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state])
-    return pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state'])
+            duration = package.time
+            data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state, duration])
+    return pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration'])
 
 def parse_log(file):
     columns = ['ts', 'uid', 'id.orig_h', 'id.orig_p', 'id.resp_h', 'id.resp_p', 'proto', 'service', 'duration', 'orig_bytes', 'resp_bytes', 'conn_state', 'local_orig', 'missed_bytes', 'history', 'orig_pkts', 'orig_ip_bytes', 'resp_pkts', 'resp_ip_bytes', 'tunnel_parents', 'threat', 'sample']
@@ -26,8 +27,9 @@ def parse_log(file):
     dataFrame['orig_bytes'] = pd.to_numeric(dataFrame['orig_bytes'], errors='coerce').fillna(0).astype(int)
     dataFrame['proto'] = dataFrame['proto'].astype(str)
     dataFrame['orig_bytes'] = pd.to_numeric(dataFrame['orig_bytes'], errors='coerce').fillna(0).astype(int)
+    dataFrame['duration'] = pd.to_numeric(dataFrame['duration'], errors='coerce').fillna(0).astype(float)
     dataFrame = dataFrame.rename(columns={'id.orig_h': 'src', 'id.resp_h': 'dst', 'orig_bytes': 'length', 'ts': 'timestamp', 'id.orig_p': 'src_port', 'id.resp_p': 'dst_port'})
-    return dataFrame[['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']]
+    return dataFrame[['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration']]
 
 def convert_data(file):
     if file.endswith('.pcap'):

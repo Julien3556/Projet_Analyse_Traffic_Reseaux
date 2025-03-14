@@ -1,5 +1,6 @@
 import parse_data
-def detect_anomalies(data, column, threshold=None):
+
+def detect_anomalies(data, column, threshold=None, filter=None):
     """
     Détecte les activités anormales basées sur une colonne et un seuil.
 
@@ -14,9 +15,12 @@ def detect_anomalies(data, column, threshold=None):
     """
     if threshold is None:
         threshold = data[column].mean() + 3 * data[column].std()
+    if filter is not None:
+        data = data.query(filter)
     anomalies = data[data[column] > threshold]
     return anomalies
 
 if __name__ == '__main__':
-    dataFrame = parse_data.parse_log("data/conn_sample.log")
-    detect_anomalies(dataFrame,'proto')
+    data = parse_data.convert_data('data/conn_sample.log')
+    anomalies = detect_anomalies(data, 'length', filter='proto == "http"')
+    print(anomalies)
