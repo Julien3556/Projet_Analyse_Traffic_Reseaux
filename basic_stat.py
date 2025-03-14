@@ -25,7 +25,21 @@ def ip_nbPort(dataFrame):
     # Affichage du graphique
     plt.show()
 
+
+def ip_connexionTime(dataFrame):
+    connexionTime = dataFrame.groupby("src")["duration"].mean()
+    limit = int(input("Select the minimum duration : "))
+    connexionTime = connexionTime[connexionTime > limit]
+    connexionTime.plot(kind="bar", color="skyblue", edgecolor="black")
+    plt.xlabel("Adresse IP source")
+    plt.ylabel("Durée de connexion")
+    plt.xticks(rotation=45, fontsize=6)  
+    plt.grid(axis="y", linestyle="--", alpha=0.7)  
+    plt.show()
+
+
+
 if __name__ == '__main__':
     # Utiliser parse_log pour charger les données
     dataFrame = parse_log("data/conn_sample.log")
-    ip_nbPort(dataFrame)
+    ip_connexionTime(dataFrame)
