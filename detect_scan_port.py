@@ -10,10 +10,10 @@ def scans(dataFrame):
     connections_rejected = rejected_connections.groupby("src").size()
 
     fusion = port_scan_attempts.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
-    print(list(fusion))
+    
 
     print("IPs suspectées de scan de ports: ")
-    print(fusion)
+    print(list(fusion))
     print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", fusion.size, "\n")
 
 if __name__ == '__main__':

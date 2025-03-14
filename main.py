@@ -51,7 +51,7 @@ Dépendances :
 
 if __name__ == "__main__" :
     while True:
-        print("\n===Commandes possibles=== \n\n0-Quit \n1-Select file (select) \n2-Afficher les logs (print) \n3-Convertisseur de data (convert) \n4-Scans de ports (sp) \n5-Détecte les activités anormales (detect)  \n6-eeStatee (stat) \n7-")
+        print("\n===Commandes possibles=== \n\n0-Quit \n1-Select file (select) \n2-Afficher les logs (print) \n3-Convertisseur de data (convert) \n4-Scans de ports (sp) \n5-Détecte les activités anormales (detect)  \n6-eeStatee (stat) \n7-Modèle Isolation Forest (forest) ")
         commandes = input(">>> : ")
         # if dataFrame.empty:
         #     print("Le dataFrame est vide")
@@ -61,8 +61,11 @@ if __name__ == "__main__" :
                 print("Déconnexion réussie.")
                 break
             
-            case "afficher":
-                print(dataFrame.head())
+            case "print":
+                try :
+                    print(dataFrame.head())
+                except:
+                    print('Ulitilser la commande convert pour créer un dataFrame.')
 
             case "select":
                 repertoire = "data"
@@ -88,16 +91,25 @@ if __name__ == "__main__" :
                 detect_scan_port.scans(dataFrame)
                 
             case "detect":
-                data = parse_data.convert_data('data/conn_sample.log')
                 protos = ['tcp','udp'] # Cf parsa data
-                proto = input("Protocole à analyser : ")
+                proto = input("Protocole à analyser : ").lower().strip()
+
+                # Vérification que le protocole est bien dans la liste autorisée
+                if proto in protos:
+                    print(f"✅ Le protocole choisi est correct : {proto}")
+                    anomalies = detect_anomalies.detect_anomalies(data, 'length', filter=f'proto == "{proto}"')
+                    print(anomalies)
+                else:
+                    print(f"❌ Erreur : Le protocole '{proto}' n'est pas valide. Protocole(s) disponible(s) : {', '.join(protos)}")
+                data = parse_data.convert_data('data/conn_sample.log')
+
                 print("Le protocole choisit est correct.")
                 anomalies = detect_anomalies.detect_anomalies(data, 'length', filter='proto == "'+str(proto)+'"')
                 print(anomalies)
 
             case "convert":
-                data = parse_data.convert_data(file)
-                print(data.sample(20))
+                dataFrame = parse_data.convert_data(file)
+                print(dataFrame.sample(20))
                 print("Le fichier ",file,"a bien été convertit.")
 
             case "stat":
