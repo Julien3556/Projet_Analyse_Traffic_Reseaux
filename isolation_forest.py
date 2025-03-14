@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 from parse_data import convert_data
+import pickle
 
 def train_isolation_forest(data, features):
     """
@@ -31,10 +32,27 @@ def detect_anomalies(model, data, features):
     """
     data['anomaly'] = model.predict(data[features])
     anomalies = data[data['anomaly'] == -1]
+
     return anomalies
+
+def load_model(filename):
+    """
+    Charge un modèle Isolation Forest à partir d'un fichier pickle.
+
+    Args:
+        filename (str): Le nom du fichier contenant le modèle sauvegardé.
+
+    Returns:
+        IsolationForest: Le modèle Isolation Forest chargé.
+    """
+    with open(filename, "rb") as file:
+        model = pickle.load(file)
+    return model
 
 if __name__ == '__main__':
     data = convert_data('data/conn_sample.log')
     model = train_isolation_forest(data, ['length', 'src_port', 'dst_port'])
+    with open('.\data\isolation_forest_model.pkl', 'wb') as file:
+        pickle.dump(model, file)
     anomalies = detect_anomalies(model, data, ['length', 'src_port', 'dst_port'])
     print(anomalies)

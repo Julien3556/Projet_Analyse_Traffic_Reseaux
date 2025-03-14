@@ -2,6 +2,7 @@
 import pandas as pd  
 import matplotlib.pyplot as plt  
 from parse_data import parse_log  # Import the parse_log function
+from isolation_forest import detect_anomalies, load_model  # Import the detect_anomalies function
 
 def ip_nbPort(dataFrame):
     # Count the number of distinct ports contacted by each source IP address (src)
@@ -45,7 +46,32 @@ def ip_connexionTime(dataFrame):
     plt.show()
 
 
+def destPort_nbConnexion(dataFrame):
+    # Count the number of connections to each destination port
+    port_connexions = dataFrame.groupby("dst_port").size()
+
+    # Filter: keep only destination ports that received more than a specified number of connections
+    limit = int(input("Select the minimum number of connections : "))
+    port_connexions = port_connexions[port_connexions > limit]
+
+    # Create the chart
+    port_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
+
+    # Add labels and title to the chart
+    plt.xlabel("Destination port")  
+    plt.ylabel("Number of connections")  
+    plt.title("Number of connections per destination port")  
+    plt.xticks(rotation=45, fontsize=6)  
+    plt.grid(axis="y", linestyle="--", alpha=0.7)  
+
+    # Display the chart
+    plt.show()
+
+
+
 if __name__ == '__main__':
     # Use parse_log to load the data
     dataFrame = parse_log("data/conn_sample.log")
-    ip_connexionTime(dataFrame)
+
+    dataFrameWhenAnomalies = detect_anomalies(load_model(".\data\isolation_forest_model.pkl"), dataFrame, ['length', 'src_port', 'dst_port'])
+    destPort_nbConnexion(dataFrameWhenAnomalies)
