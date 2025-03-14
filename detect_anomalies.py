@@ -22,5 +22,6 @@ def detect_anomalies(data, column, threshold=None, filter=None):
 
 if __name__ == '__main__':
     data = parse_data.convert_data('data/conn_sample.log')
-    anomalies = detect_anomalies(data, 'length', filter='proto == "http"')
+    proto = 'tcp'
+    anomalies = detect_anomalies(data, 'length', filter='proto == "'+str(proto)+'"')
     print(anomalies)
