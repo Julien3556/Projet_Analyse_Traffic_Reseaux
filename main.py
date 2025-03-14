@@ -88,8 +88,12 @@ if __name__ == "__main__" :
                 detect_scan_port.scans(dataFrame)
                 
             case "detect":
-                dataFrame = parse_data.parse_log(file)
-                detect_scan_port.scans(dataFrame)
+                data = parse_data.convert_data('data/conn_sample.log')
+                protos = ['tcp','udp'] # Cf parsa data
+                proto = input("Protocole à analyser : ")
+                print("Le protocole choisit est correct.")
+                anomalies = detect_anomalies.detect_anomalies(data, 'length', filter='proto == "'+str(proto)+'"')
+                print(anomalies)
 
             case "convert":
                 data = parse_data.convert_data(file)
