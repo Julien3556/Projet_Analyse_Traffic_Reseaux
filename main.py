@@ -3,6 +3,7 @@ import pandas as pd
 import detect_scan_port
 import parse_data
 import detect_anomalies
+import basic_stat
 import os
 
 """
@@ -42,19 +43,22 @@ Dépendances :
 - pandas (pd) pour la manipulation des données
 - detect_scan_port pour les scans de ports
 - parse_data pour la conversion des données
+- detect_anomalies pour la détection d'anomalies
+- basic_stat pour la crétion de graphique
+- os pour la gestion de fichier
 
 """
 
 if __name__ == "__main__" :
     while True:
-        print("\n===Commandes possibles=== \n\n1-Select file (select) \n2-Afficher les logs (print) \n3-Scans de ports (sp) \n4-Détecte les activités anormales(detect) \n5-Convertisseur de data (convert) \n6-Detection http suspecte (http)")
+        print("\n===Commandes possibles=== \n\n0-Quit \n1-Select file (select) \n2-Afficher les logs (print) \n3-Convertisseur de data (convert) \n4-Scans de ports (sp) \n5-Détecte les activités anormales(detect)  \n6-eeStatee (stat)")
         commandes = input(">>> : ")
         # if dataFrame.empty:
         #     print("Le dataFrame est vide")
         #     print("Utiliser la commande select pour sélectionner un fichier ou convert pour convertir un fichier pcap")
         match commandes.lower():
-            case "quitter" | "q":
-                print("Déconnexion réussie")
+            case "quit" | "q":
+                print("Déconnexion réussie.")
                 break
             
             case "afficher":
@@ -69,13 +73,13 @@ if __name__ == "__main__" :
                         print(fichier)
                 
                 # Création d'un fichier tampon
-                buffer_file = input("File name : ")
+                buffer_file = input("Nom du fichier : ")
                 buffer_file = "data/" + buffer_file
                 
                 # Vérification de l'existence du fichier tampon
                 if os.path.isfile(buffer_file):
                     file = buffer_file
-                    print("Le fichier a bien été pris en compte.")
+                    print("Le fichier ",file,"a bien été pris en compte.")
                 else:
                     print("Aucun fichier trouvé dans le dossier \"data\".")
 
@@ -90,12 +94,15 @@ if __name__ == "__main__" :
             case "convert":
                 data = parse_data.convert_data(file)
                 print(data.sample(20))
+                print("Le fichier ",file,"a bien été convertit.")
 
-            case "http":
-                d.detect(dataFrame)
+            case "stat":
+                dataFrame = parse_data.parse_log(file)
+                print("Création du graphique en cours...")
+                basic_stat.ip_nbPort(dataFrame)
                 
             case _ if len(commandes) > 10:
-                print("Tout va bien.")
+                print("Erreur d'utilisation de commande : ne rentrer pas d'arguments")
 
             case _:
                 print("Erreur de commande.")
