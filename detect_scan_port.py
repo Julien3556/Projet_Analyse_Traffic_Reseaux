@@ -19,12 +19,9 @@ def scans(dataFrame):
     print(len(suspected_scanners))
     """
             
-# if __name__ == '__main__':
-#     columns = ['ts','uid','id.orig_h','id.orig_p','id.resp_h','id.resp_p','proto','service','duration','orig_bytes','resp_bytes','conn_state','local_orig','missed_bytes','history','orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample']
-#     dataFrame = pd.read_csv("conn_sample.log", sep="\s+", names=columns)
-#     scan = sp.Scans(dataFrame)
-#     scan.scans()
-#     scan.scans2()
+if __name__ == '__main__':
+    columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
+    dataFrame = pd.read_csv("conn_sample.log", sep="\s+", names=columns)
 
 
         

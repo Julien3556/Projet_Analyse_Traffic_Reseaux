@@ -6,11 +6,7 @@ import detect_http_suspect as d
 import os
 
 # Définition des noms de colonnes
-columns = [
-    'ts','uid','id.orig_h','id.orig_p','id.resp_h','id.resp_p','proto','service','duration',
-    'orig_bytes','resp_bytes','conn_state','local_orig','missed_bytes','history',
-    'orig_pkts','orig_ip_bytes','resp_pkts','resp_ip_bytes','tunnel_parents','threat','sample'
-]
+columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
 
 # Fichier par défaut :
 file = 'data/conn_sample.log'
@@ -64,9 +60,12 @@ if __name__ == "__main__" :
                 for fichier in os.listdir(repertoire):
                     if fichier.endswith(".pcap") or fichier.endswith(".log"):
                         print(fichier)
-                        
+                
+                # Création d'un fichier tampon
                 buffer_file = input("File name : ")
                 buffer_file = "data/" + buffer_file
+                
+                # Vérification de l'existence du fichier tampon
                 if os.path.isfile(buffer_file):
                     file = buffer_file
                     print("Le fichier a bien été pris en compte.")
@@ -75,9 +74,9 @@ if __name__ == "__main__" :
 
             case "sp":
                 # Charger les logs dans un DataFrame
-                dataFrame = pd.read_csv(file, sep="\t", names=columns, engine="python")
+                dataFrame = pd.read_csv(file, sep="\s+", names=columns, engine="python")
                 # Correction du format timestamp
-                dataFrame['ts'] = pd.to_datetime(dataFrame['ts'].astype(float), unit='s')
+                dataFrame['timestamp'] = pd.to_datetime(dataFrame['timestamp'].astype(float), unit='s')
                 sp.scans(dataFrame)
 
             case "convert":
@@ -86,6 +85,9 @@ if __name__ == "__main__" :
 
             case "http":
                 d.detect(dataFrame)
+                
+            case _ if len(commandes) > 10:
+                print("Tout va bien.")
 
             case _:
                 print("Erreur de commande.")

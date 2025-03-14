@@ -1,4 +1,3 @@
-# Importation des bibliothèques nécessaires
 import pandas as pd
 import pyshark as ps
 
@@ -41,3 +40,23 @@ def convert_data(file):
 if __name__ == '__main__':
     data = convert_data('data/conn_sample.log')
     print(data.sample(20))
+    
+    df = pd.DataFrame(data)
+    
+    # Convertir le DataFrame en log
+    def create_log_from_df(dataframe, log_filename):
+        with open(log_filename, 'w') as f:
+            for _, row in dataframe.iterrows():
+                log_line = (
+                    f"[{row['timestamp']}] - "
+                    f"SRC: {row['src']} - DST: {row['dst']} - "
+                    f"PROTO: {row['proto']} - LENGTH: {row['length']} - "
+                    f"SRCPORT: {row['src_port']} - DSTPORT: {row['dst_port']} - "
+                    f"CONN_STATE: {row['conn_state']}\n"
+                )
+                f.write(log_line)
+
+    # Appeler la fonction pour créer le fichier .log
+    create_log_from_df(df, 'network_log.log')
+
+    print("Fichier network_log.log créé avec succès.")
