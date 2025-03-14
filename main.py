@@ -51,7 +51,7 @@ Dépendances :
 
 if __name__ == "__main__" :
     while True:
-        print("\n===Commandes possibles=== \n\n0-Quit \n1-Select file (select) \n2-Afficher les logs (print) \n3-Convertisseur de data (convert) \n4-Scans de ports (sp) \n5-Détecte les activités anormales(detect)  \n6-eeStatee (stat)")
+        print("\n===Commandes possibles=== \n\n0-Quit \n1-Select file (select) \n2-Afficher les logs (print) \n3-Convertisseur de data (convert) \n4-Scans de ports (sp) \n5-Détecte les activités anormales (detect)  \n6-eeStatee (stat) \n7-")
         commandes = input(">>> : ")
         # if dataFrame.empty:
         #     print("Le dataFrame est vide")
@@ -100,6 +100,12 @@ if __name__ == "__main__" :
                 dataFrame = parse_data.parse_log(file)
                 print("Création du graphique en cours...")
                 basic_stat.ip_nbPort(dataFrame)
+                
+            case "forest":
+                data = convert_data(file)
+                model = train_isolation_forest(data, ['length', 'src_port', 'dst_port'])
+                anomalies = detect_anomalies(model, data, ['length', 'src_port', 'dst_port'])
+                print(anomalies)
                 
             case _ if len(commandes) > 10:
                 print("Erreur d'utilisation de commande : ne rentrer pas d'arguments")

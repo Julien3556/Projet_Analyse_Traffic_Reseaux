@@ -11,8 +11,8 @@ def parse_pcap(file):
             proto = int(package.ip.proto)
             length = int(package.length)
             timestamp = package.sniff_time
-            src_port = int(package[package.transport_layer].srcport) if hasattr(package, package.transport_layer) else None
-            dst_port = int(package[package.transport_layer].dstport) if hasattr(package, package.transport_layer) else None
+            src_port = int(package[package.transport_layer].srcport) if package.transport_layer else None
+            dst_port = int(package[package.transport_layer].dstport) if package.transport_layer else None
             conn_state = package.tcp.flags if 'TCP' in package else None
             data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state])
     return pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state'])
@@ -31,32 +31,14 @@ def parse_log(file):
 
 def convert_data(file):
     if file.endswith('.pcap'):
+        print("Le fichier courant est bien un .pcap")
         return parse_pcap(file)
     elif file.endswith('.log'):
+        print("Le fichier courant est bien un .log")
         return parse_log(file)
     else:
         raise ValueError('Unsupported file type')
 
 if __name__ == '__main__':
-    data = convert_data('data/conn_sample.log')
+    data = convert_data('data/sample.pcap')
     print(data.sample(20))
-    
-    df = pd.DataFrame(data)
-    
-    # Convertir le DataFrame en log
-    def create_log_from_df(dataframe, log_filename):
-        with open(log_filename, 'w') as f:
-            for _, row in dataframe.iterrows():
-                log_line = (
-                    f"[{row['timestamp']}] - "
-                    f"SRC: {row['src']} - DST: {row['dst']} - "
-                    f"PROTO: {row['proto']} - LENGTH: {row['length']} - "
-                    f"SRCPORT: {row['src_port']} - DSTPORT: {row['dst_port']} - "
-                    f"CONN_STATE: {row['conn_state']}\n"
-                )
-                f.write(log_line)
-
-    # Appeler la fonction pour créer le fichier .log
-    create_log_from_df(df, 'network_log.log')
-
-    print("Fichier network_log.log créé avec succès.")
