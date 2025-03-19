@@ -1,6 +1,6 @@
 # Importation des bibliothèques nécessaires
 import pandas as pd
-from src.parse_data import parse_log
+from parse_data import parse_log
 
 def scans(dataFrame):
     port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique() # Tableau qui comprend un grand nb de connexions
@@ -8,7 +8,7 @@ def scans(dataFrame):
     suspected_scanners = port_scan_attempts[port_scan_attempts > threshold]
 
     rejected_connections = dataFrame[dataFrame["conn_state"] == "REJ"] # Tableau qui comprend les connexions rejetées
-    connections_rejected = rejected_connections.groupby("src").size()
+    connections_rejected = rejected_connections.groupby("src")
 
     fusion = port_scan_attempts.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
     
