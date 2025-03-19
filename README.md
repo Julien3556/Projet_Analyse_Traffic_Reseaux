@@ -39,6 +39,8 @@ https://notebook.community/dloss/notebooks/NetworkTraffic-Pandas
 
 ## Auteurs
 Listez le(s) auteur(s) du projet ici !
+* **Arthur** _alias_ [@SloOwn](https://github.com/SloOwn)
+* **Noah** _alias_ [@Noah-ENSIB](https://github.com/Noah-ENSIB)
 * **Julien** _alias_ [@Julien3556](https://github.com/Julien3556)
 
 
