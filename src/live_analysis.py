@@ -1,7 +1,5 @@
 import pyshark
 import pandas as pd
-from parse_data import protocol_map, interpret_tcp_flags
-from detect_scan_port import scans  # Importez votre fonction de détection de scans
 
 def analyze_packet(packet):
     """

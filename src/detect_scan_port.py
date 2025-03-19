@@ -1,7 +1,4 @@
 # Importation des bibliothèques nécessaires
-import pandas as pd
-from parse_data import parse_log
-
 def scans(dataFrame):
     port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique() # Tableau qui comprend un grand nb de connexions
     threshold = int(input("Select the threshold : "))
@@ -20,7 +17,3 @@ def scans(dataFrame):
         print(list(fusion))
         print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", fusion.size, "\n")
 
-if __name__ == '__main__':
-    # Utiliser parse_log pour charger les données
-    dataFrame = parse_log("data/conn_sample.log")
-    scans(dataFrame)
