@@ -12,9 +12,12 @@ def scans(dataFrame):
     fusion = port_scan_attempts.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
     print(list(fusion))
 
-    print("IPs suspectées de scan de ports: ")
-    print(fusion)
-    print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", fusion.size, "\n")
+    if fusion.size == 0:
+        return
+    else:
+        print("IPs suspectées de scan de ports: ")
+        print(fusion)
+        print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", fusion.size, "\n")
 
 if __name__ == '__main__':
     # Utiliser parse_log pour charger les données
