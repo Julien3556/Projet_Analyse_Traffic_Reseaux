@@ -1,4 +1,4 @@
-# Importation des bibliothèques nécessaires
+# Import necessary libraries
 import pandas as pd
 import detect_scan_port
 import parse_data
@@ -7,112 +7,150 @@ import basic_stat
 import os
 
 """
-Bibliothèques à installer :
--pandas
--scikit-learn
--pyshark
--matplotlib
+Libraries to install:
+- pandas
+- scikit-learn
+- pyshark
+- matplotlib
 """
 
-
-# Définition des noms de colonnes
+# Define column names
 columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
 
-# Fichier par défaut :
+# Default file:
 file = 'data/conn_sample.log'
 
-# Initialisation d'un dataFrame
+# Initialize a DataFrame
 # dataFrame = pd.DataFrame()
 # print(dataFrame)
 
 """
-Documentation du code
+Code Documentation
 
-Ce code utilise la structure match-case pour exécuter différentes commandes en fonction de l'entrée utilisateur.
+This code uses a match-case structure to execute different commands based on user input.
 
-Commandes possibles :
-- quitter | q : Permet de quitter le programme en affichant un message de déconnexion.
-- afficher : Affiche les premières lignes du DataFrame.
-- select : Permet à l'utilisateur de sélectionner un fichier en saisissant son nom.
-- detect_scan_port : Effectue un scan de ports sur les données du DataFrame via la classe Scans.
-- convert : Convertit les données du fichier sélectionné et affiche un échantillon de 20 lignes.
-- http : Détecte les activités HTTP suspectes dans le DataFrame.
-- _ : Affiche un message d'erreur si la commande est inconnue.
+Available commands:
+- quit | q: Exits the program and displays a logout message.
+- show: Displays the first lines of the DataFrame.
+- select: Allows the user to select a file by typing its name.
+- detect_scan_port: Performs a port scan on the DataFrame data via the Scans class.
+- convert: Converts the selected file's data and displays a 20-row sample.
+- http: Detects suspicious HTTP activity in the DataFrame.
+- _: Displays an error message if the command is unknown.
 
-Dépendances :
-- pandas (pd) pour la manipulation des données
-- detect_scan_port pour les scans de ports
-- parse_data pour la conversion des données
-- detect_anomalies pour la détection d'anomalies
-- basic_stat pour la crétion de graphique
-- os pour la gestion de fichier
-
+Dependencies:
+- pandas (pd) for data handling
+- detect_scan_port for port scans
+- parse_data for data conversion
+- detect_anomalies for anomaly detection
+- basic_stat for statistics and graph generation
+- os for file handling
 """
 
-if __name__ == "__main__" :
+if __name__ == "__main__":
     while True:
-        print("\n===Commandes possibles=== \n\n0-Quit \n1-Select file (select) \n2-Afficher les logs (print) \n3-Convertisseur de data (convert) \n4-Scans de ports (sp) \n5-Détecte les activités anormales (detect)  \n6-eeStatee (stat) \n7-")
-        commandes = input(">>> : ")
+        print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Data converter \n4 - Port scans \n5 - Detect anomalies \n6 - Generate statistics \n7 - Isolation Forest Model \n8 - Complete scans")
+        command = input(">>> : ")
         # if dataFrame.empty:
-        #     print("Le dataFrame est vide")
-        #     print("Utiliser la commande select pour sélectionner un fichier ou convert pour convertir un fichier pcap")
-        match commandes.lower():
-            case "quit" | "q":
-                print("Déconnexion réussie.")
+        #     print("The DataFrame is empty.")
+        #     print("Use the 'select' command to choose a file or 'convert' to convert a pcap file.")
+        match command.lower():
+            case "q" | "0":
+                print("Successfully disconnected.")
                 break
-            
-            case "afficher":
-                print(dataFrame.head())
 
-            case "select":
-                repertoire = "data"
-                print("Vous avez tous ces fichiers dans le répertoire data : ")
+            case "2":  # Show
+                try:
+                    print(dataFrame.head())
+                except:
+                    print("Use the 'convert' command to create a DataFrame first.")
+
+            case "1":  # Select
+                folder = "data"
+                print("Available files in the 'data' folder:")
+                for f in os.listdir(folder):
+                    if f.endswith(".pcap") or f.endswith(".log"):
+                        print(f)
                 
-                for fichier in os.listdir(repertoire):
-                    if fichier.endswith(".pcap") or fichier.endswith(".log"):
-                        print(fichier)
-                
-                # Création d'un fichier tampon
-                buffer_file = input("Nom du fichier : ")
+                buffer_file = input("Enter file name: ")
                 buffer_file = "data/" + buffer_file
-                
-                # Vérification de l'existence du fichier tampon
+
                 if os.path.isfile(buffer_file):
                     file = buffer_file
-                    print("Le fichier ",file,"a bien été pris en compte.")
+                    print("File", file, "has been successfully selected.")
                 else:
-                    print("Aucun fichier trouvé dans le dossier \"data\".")
+                    print("No file found in the 'data' folder.")
 
-            case "sp":
+            case "4":  # Port scans
                 dataFrame = parse_data.parse_log(file)
                 detect_scan_port.scans(dataFrame)
-                
-            case "detect":
-                data = parse_data.convert_data('data/conn_sample.log')
-                protos = ['tcp','udp'] # Cf parsa data
-                proto = input("Protocole à analyser : ")
-                print("Le protocole choisit est correct.")
-                anomalies = detect_anomalies.detect_anomalies(data, 'length', filter='proto == "'+str(proto)+'"')
-                print(anomalies)
 
-            case "convert":
+            case "5":  # Detect anomalies
+                protocols = ['icmp', 'igmp', 'tcp', 'udp', 'ipv6', 'gre','esp','ah','icmpv6','ospf','sctp','mpls-in-ip']
+                print("Differents protocols : ")
+                for proto in protocols:
+                    print("",proto, end='') 
+                print("")
+                proto = input("Protocol to analyze: ").lower().strip()
                 data = parse_data.convert_data(file)
-                print(data.sample(20))
-                print("Le fichier ",file,"a bien été convertit.")
 
-            case "stat":
+                if proto in protocols:
+                    print(f"✅ Protocol selected: {proto}")
+                    anomalies = detect_anomalies.detect_anomalies(data, 'length', filter=f'proto == \"{proto}\"')
+                    print(anomalies)
+                else:
+                    print(f"❌ Error: Protocol '{proto}' is invalid. Available protocols: {', '.join(protocols)}")
+
+            case "3":  # Convert
+                dataFrame = parse_data.convert_data(file)
+                print(dataFrame.sample(20))
+                print("File", file, "was successfully converted.")
+
+            case "6":  # Statistics
                 dataFrame = parse_data.parse_log(file)
-                print("Création du graphique en cours...")
+                basic_stat.ip_nbPort(dataFrame)
+
+            case "7":  # Isolation Forest
+                dataFrame = parse_data.convert_data(file)
+                model = train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
+                anomalies = detect_anomalies(model, dataFrame, ['length', 'src_port', 'dst_port'])
+                print(anomalies)
+                
+            case "8":  # Complete scans
+                dataFrame = parse_data.convert_data(file)
+                
+                print("\nPort scans")
+                detect_scan_port.scans(dataFrame)
+                
+                print("\nDetect anomalies")
+                protocols = ['icmp', 'igmp', 'tcp', 'udp', 'ipv6', 'gre','esp','ah','icmpv6','ospf','sctp','mpls-in-ip']
+                print("Differents protocols : ")
+                for proto in protocols:
+                    print("",proto, end='') 
+                print("")
+                proto = input("\nProtocol to analyze: ").lower().strip()
+                data = parse_data.convert_data(file)
+                if proto in protocols:
+                    print(f"✅ Protocol selected: {proto}")
+                    anomalies = detect_anomalies.detect_anomalies(data, 'length', filter=f'proto == \"{proto}\"')
+                    print(anomalies)
+                else:
+                    print(f"❌ Error: Protocol '{proto}' is invalid. Available protocols: {', '.join(protocols)}")
+                
+                condition = input("Do you want to do Isolation Forest ? (y/N):")
+                if condition == "y":
+                    print("\nIsolation Forest")
+                    model = train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
+                    anomalies = detect_anomalies(model, dataFrame, ['length', 'src_port', 'dst_port'])
+                    print(anomalies)
+                    
+                print("\nStatistics")
                 basic_stat.ip_nbPort(dataFrame)
                 
-            case "forest":
-                data = convert_data(file)
-                model = train_isolation_forest(data, ['length', 'src_port', 'dst_port'])
-                anomalies = detect_anomalies(model, data, ['length', 'src_port', 'dst_port'])
-                print(anomalies)
-                
-            case _ if len(commandes) > 10:
-                print("Erreur d'utilisation de commande : ne rentrer pas d'arguments")
+
+
+            case _ if len(command) > 10:
+                print("Command input too long. Please try again.")
 
             case _:
-                print("Erreur de commande.")
+                print("Unknown command.")

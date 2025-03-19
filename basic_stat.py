@@ -68,6 +68,10 @@ def destPort_nbConnexion(dataFrame):
     plt.show()
 
 
+def time_connection(dataFrame):
+    pass
+
+
 
 if __name__ == '__main__':
     # Use parse_log to load the data
