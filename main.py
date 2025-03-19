@@ -49,13 +49,13 @@ Dependencies:
 
 if __name__ == "__main__":
     while True:
-        print("\n===Available Commands=== \n\n0 - Exit \n1 - Select a file \n2 - Show logs \n3 - Data converter \n4 - Port scans \n5 - Detect anomalies \n6 - Generate statistics \n7 - Isolation Forest Model \n8 -")
+        print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Data converter \n4 - Port scans \n5 - Detect anomalies \n6 - Generate statistics \n7 - Isolation Forest Model \n8 -")
         command = input(">>> : ")
         # if dataFrame.empty:
         #     print("The DataFrame is empty.")
         #     print("Use the 'select' command to choose a file or 'convert' to convert a pcap file.")
         match command.lower():
-            case "quit" | "0":
+            case "q" | "0":
                 print("Successfully disconnected.")
                 break
 
@@ -86,7 +86,11 @@ if __name__ == "__main__":
                 detect_scan_port.scans(dataFrame)
 
             case "5":  # Detect anomalies
-                protocols = ['tcp', 'udp']
+                protocols = ['icmp', 'igmp', 'tcp', 'udp', 'ipv6', 'gre','esp','ah','icmpv6','ospf','sctp','mpls-in-ip']
+                print("Differents protocols : ")
+                for proto in protocols:
+                    print("",proto, end='') 
+                print("")
                 proto = input("Protocol to analyze: ").lower().strip()
                 data = parse_data.convert_data(file)
 

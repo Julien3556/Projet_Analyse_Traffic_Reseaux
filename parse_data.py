@@ -66,10 +66,10 @@ def parse_log(file):
 
 def convert_data(file):
     if file.endswith('.pcap'):
-        print("Le fichier courant est bien un .pcap")
+        print("The current file is indeed a .pcap file.")
         return parse_pcap(file)
     elif file.endswith('.log'):
-        print("Le fichier courant est bien un .log")
+        print("The current file is indeed a .log file.")
         return parse_log(file)
     else:
         raise ValueError('Unsupported file type')
