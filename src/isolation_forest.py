@@ -1,6 +1,5 @@
 import pandas as pd
 from sklearn.ensemble import IsolationForest
-from src.parse_data import convert_data
 import pickle
 
 def train_isolation_forest(data, features):

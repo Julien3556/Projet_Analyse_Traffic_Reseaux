@@ -1,81 +1,57 @@
 import pyshark
 import pandas as pd
-from src.parse_data import protocol_map, interpret_tcp_flags
-from src.detect_scan_port import scans  # Importez votre fonction de détection de scans
+import threading
+from queue import Queue
 
 def analyze_packet(packet):
-    """
-    Analyse un paquet capturé et extrait des informations utiles.
-
-    Args:
-        packet: Un paquet capturé par pyshark.
-
-    Returns:
-        dict: Les informations extraites du paquet (ou None si le paquet ne contient pas d'informations IP).
-    """
     try:
         if 'IP' in packet:
-            src = packet.ip.src
-            dst = packet.ip.dst
-            proto_num = int(packet.ip.proto)
-            proto = protocol_map.get(proto_num, str(proto_num))
-            length = int(packet.length)
-            timestamp = packet.sniff_time
-            src_port = int(packet[packet.transport_layer].srcport) if hasattr(packet, 'transport_layer') and packet.transport_layer and hasattr(packet[packet.transport_layer], 'srcport') else None
-            dst_port = int(packet[packet.transport_layer].dstport) if hasattr(packet, 'transport_layer') and packet.transport_layer and hasattr(packet[packet.transport_layer], 'dstport') else None
-            conn_state = interpret_tcp_flags(int(packet.tcp.flags, 16)) if 'TCP' in packet and hasattr(packet, 'tcp') else None
-            duration = packet.tcp.time if 'TCP' in packet and hasattr(packet.tcp, 'time') else None
-            dns = packet.dns.qry_name if 'DNS' in packet and hasattr(packet.dns, 'qry_name') else None
-
             return {
-                'src': src,
-                'dst': dst,
-                'proto': proto,
-                'length': length,
-                'timestamp': timestamp,
-                'src_port': src_port,
-                'dst_port': dst_port,
-                'conn_state': conn_state,
-                'duration': duration,
-                'DNS': dns
+                'src': packet.ip.src,
+                'dst': packet.ip.dst,
+                'proto': protocol_map.get(int(packet.ip.proto), str(packet.ip.proto)),
+                'length': int(packet.length),
+                'timestamp': packet.sniff_time,
+                'src_port': int(packet[packet.transport_layer].srcport) if hasattr(packet, 'transport_layer') else None,
+                'dst_port': int(packet[packet.transport_layer].dstport) if hasattr(packet, 'transport_layer') else None,
+                'conn_state': interpret_tcp_flags(int(packet.tcp.flags, 16)) if 'TCP' in packet else None,
+                'duration': packet.tcp.time if 'TCP' in packet and hasattr(packet.tcp, 'time') else None,
+                'DNS': packet.dns.qry_name if 'DNS' in packet and hasattr(packet.dns, 'qry_name') else None
             }
-    except AttributeError as e:
-        print(f"Erreur lors de l'analyse du paquet : {e}")
+    except AttributeError:
+        pass
     return None
 
 def live_detect_scan(interface='eth0'):
-    """
-    Capture et analyse les paquets réseau en temps réel pour détecter les scans de ports.
-
-    Args:
-        interface (str): L'interface réseau à surveiller (par défaut : 'eth0').
-
-    Returns:
-        None
-    """
-    print(f"Capture en temps réel sur l'interface {interface}...")
+    print(f"Real-time capture on interface {interface}...")
     capture = pyshark.LiveCapture(interface=interface)
-    data = []
+    packet_queue = Queue()
+    batch_size = 1000  # Number of packets to accumulate before analysis
+
+    def analyze():
+        while True:
+            batch = []
+            while len(batch) < batch_size:
+                packet_info = packet_queue.get()  # Blocks until a packet is available
+                batch.append(packet_info)
+            # Process the batch of packets
+            df = pd.DataFrame(batch)
+            scans(df)
+
+    # Start a thread for analysis
+    analysis_thread = threading.Thread(target=analyze, daemon=True)
+    analysis_thread.start()
 
     try:
-        for packet in capture.sniff_continuously():
-            # Analyse du paquet capturé
+        for packet in capture.sniff_continuously(packet_count=None):
             packet_info = analyze_packet(packet)
             if packet_info:
-                data.append(packet_info)
-
-            # Analyse des données accumulées toutes les 100 paquets
-            if len(data) >= 1000:
-                df = pd.DataFrame(data)
-                print("Analyse des paquets capturés...")
-                scans(df)  # Appel à votre fonction de détection de scans
-                data.clear()  # Réinitialiser les données après l'analyse
+                packet_queue.put(packet_info)  # Add the packet to the queue
     except KeyboardInterrupt:
-        print("\nInterruption détectée. Arrêt de la capture...")
+        print("\nInterrupt detected. Stopping capture...")
     finally:
-        capture.close()  # Fermer proprement la capture
+        capture.close()
 
-# Exemple d'utilisation
 if __name__ == "__main__":
-    interface = input("Entrez l'interface réseau à surveiller (par défaut : eth0) : ") or "eth0"
+    interface = input("Enter the network interface to monitor (default: eth0): ") or "eth0"
     live_detect_scan(interface)
