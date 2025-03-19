@@ -1,11 +1,12 @@
 # Importation des bibliothèques nécessaires
 import pandas as pd  
 import matplotlib.pyplot as plt  
+from parse_data import parse_log
 
 def ip_nbPort(dataFrame, local:bool):
     # Comptage du nombre de ports distincts contactés par chaque adresse IP source (id.orig_h)
-    port_scan_attempts = dataFrame.groupby("id.orig_h")["id.resp_p"].nunique()
-
+    port_scan_attempts = dataFrame.groupby("id.orig_h")["id.resp_h"].nunique()
+    print(port_scan_attempts)
     # Filtrage : on ne garde que les IP ayant contacté plus de 50 ports distincts
     # Création du graphique
     limit = int(input("Select the minimum number of ports : "))
@@ -25,16 +26,14 @@ def ip_nbPort(dataFrame, local:bool):
     plt.show()
 
 
+def time_connection(dataFrame):
+    pass
+
+
 
 if __name__ == '__main__':
     # Définition des colonnes du fichier de logs
-    columns = [
-        'ts', 'uid', 'id.orig_h', 'id.orig_p', 'id.resp_h', 'id.resp_p', 'proto', 'service',
-        'duration', 'orig_bytes', 'resp_bytes', 'conn_state', 'local_orig', 'missed_bytes',
-        'history', 'orig_pkts', 'orig_ip_bytes', 'resp_pkts', 'resp_ip_bytes', 'tunnel_parents',
-        'threat', 'sample'
-    ]
-    # Chargement du fichier de logs dans un DataFrame pandas
-    dataFrame = pd.read_csv("./data/conn_sample.log", sep="\s+", names=columns)
+    dataFrame = parse_log("./data/conn_sample.log")
     ip_nbPort(dataFrame, True)
+
 
