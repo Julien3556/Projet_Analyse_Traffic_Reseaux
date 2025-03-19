@@ -1,8 +1,8 @@
 # Import necessary libraries
 import pandas as pd  
 import matplotlib.pyplot as plt  
-from parse_data import parse_log  # Import the parse_log function
-from isolation_forest import detect_anomalies, load_model  # Import the detect_anomalies function
+from src.parse_data import parse_log  # Import the parse_log function
+from src.isolation_forest import detect_anomalies, load_model  # Import the detect_anomalies function
 
 def ip_nbPort(dataFrame):
     # Count the number of distinct ports contacted by each source IP address (src)
@@ -68,14 +68,26 @@ def destPort_nbConnexion(dataFrame):
     plt.show()
 
 
-def time_connection(dataFrame):
-    pass
+def maxLength_ip(dataFrame):
+    ip_connexions = dataFrame.groupby("src")["length"].max()
+    limit = int(input("Select the minimum packets's size (bytes): "))
+    ip_connexions = ip_connexions[ip_connexions < limit]
+    ip_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
 
+    # Add labels and title to the chart
+    plt.xlabel("IP of packet's transmitter")  
+    plt.ylabel("Maxium size above all the packet transmitted")  
+    plt.title("Maxium size above all the packet transmitted per user")  
+    plt.xticks(rotation=45, fontsize=6)  
+    plt.grid(axis="y", linestyle="--", alpha=0.7)  
+    plt.show()
 
+    
 
 if __name__ == '__main__':
     # Use parse_log to load the data
     dataFrame = parse_log("data/conn_sample.log")
 
     dataFrameWhenAnomalies = detect_anomalies(load_model(".\data\isolation_forest_model.pkl"), dataFrame, ['length', 'src_port', 'dst_port'])
-    destPort_nbConnexion(dataFrameWhenAnomalies)
+    maxLength_ip(dataFrameWhenAnomalies)
+

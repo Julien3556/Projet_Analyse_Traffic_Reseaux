@@ -1,9 +1,10 @@
 # Import necessary libraries
 import pandas as pd
-import detect_scan_port
-import parse_data
-import detect_anomalies
-import basic_stat
+import src.detect_scan_port as detect_scan_port
+import src.parse_data as parse_data
+import src.detect_anomalies as detect_anomalies
+import src.basic_stat as basic_stat
+import src.isolation_forest as isolation_forest
 import os
 
 """
