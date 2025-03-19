@@ -1,4 +1,4 @@
-import src.parse_data
+import parse_data
 
 def detect_anomalies(data, column, threshold=None, filter=None):
     """

@@ -38,7 +38,6 @@ https://notebook.community/dloss/notebooks/NetworkTraffic-Pandas
 • Utiliser l'analyse de pcap pour la forensique réseau : par exemple, détecter les malwares, comme expliqué dans ce lien : https://cylab.be/blog/245/network-traffic-analysis-with-python-scapy-and-some-machine-learning
 
 ## Auteurs
-Listez le(s) auteur(s) du projet ici !
 * **Arthur** _alias_ [@SloOwn](https://github.com/SloOwn)
 * **Noah** _alias_ [@Noah-ENSIB](https://github.com/Noah-ENSIB)
 * **Julien** _alias_ [@Julien3556](https://github.com/Julien3556)
