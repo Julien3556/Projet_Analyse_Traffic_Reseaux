@@ -16,7 +16,7 @@ Libraries to install:
 """
 
 # Define column names
-columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
+# columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
 
 # Default file:
 file = 'data/conn_sample.log'
