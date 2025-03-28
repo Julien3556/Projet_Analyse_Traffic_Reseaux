@@ -16,7 +16,7 @@ Libraries to install:
 """
 
 # Define column names
-columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
+# columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
 
 # Default file:
 file = 'data/conn_sample.log'
@@ -36,7 +36,7 @@ Available commands:
 - select: Allows the user to select a file by typing its name.
 - detect_scan_port: Performs a port scan on the DataFrame data via the Scans class.
 - convert: Converts the selected file's data and displays a 20-row sample.
-- http: Detects suspicious HTTP activity in the DataFrame.
+- http: Detects suspicious HTTP activity in the DataFrame.1
 - _: Displays an error message if the command is unknown.
 
 Dependencies:
@@ -59,18 +59,12 @@ if __name__ == "__main__":
             case "q" | "0":
                 print("Successfully disconnected.")
                 break
-
-            case "2":  # Show
-                try:
-                    print(dataFrame.head())
-                except:
-                    print("Use the 'convert' command to create a DataFrame first.")
-
+            
             case "1":  # Select
                 folder = "data"
                 print("Available files in the 'data' folder:")
                 for f in os.listdir(folder):
-                    if f.endswith(".pcap") or f.endswith(".log"):
+                    if f.endswith(".pcap") or f.endswith(".log") or f.endswith(".csv"):
                         print(f)
                 
                 buffer_file = input("Enter file name: ")
@@ -82,9 +76,23 @@ if __name__ == "__main__":
                 else:
                     print("No file found in the 'data' folder.")
 
+            case "2":  # Show
+                try:
+                    print(dataFrame.head())
+                except:
+                    print("Use the 'convert' command to create a DataFrame first.")
+
+            case "3":  # Convert
+                try :
+                    dataFrame = parse_data.convert_data(file)
+                    print(dataFrame.sample(20))
+                    print("File", file, "was successfully converted.")
+                except :
+                    print("Error convertion file.")
+
             case "4":  # Port scans
-                dataFrame = parse_data.parse_log(file)
-                detect_scan_port.scans(dataFrame)
+                imput = int(input("Select the threshold : "))
+                detect_scan_port.scans(dataFrame, imput)
 
             case "5":  # Detect anomalies
                 protocols = ['icmp', 'igmp', 'tcp', 'udp', 'ipv6', 'gre','esp','ah','icmpv6','ospf','sctp','mpls-in-ip']
@@ -102,10 +110,6 @@ if __name__ == "__main__":
                 else:
                     print(f"❌ Error: Protocol '{proto}' is invalid. Available protocols: {', '.join(protocols)}")
 
-            case "3":  # Convert
-                dataFrame = parse_data.convert_data(file)
-                print(dataFrame.sample(20))
-                print("File", file, "was successfully converted.")
 
             case "6":  # Statistics
                 dataFrame = parse_data.parse_log(file)
