@@ -1,7 +1,8 @@
 import pyshark
 import pandas as pd
-from parse_data import protocol_map, interpret_tcp_flags
-from detect_scan_port import scans
+from src.parse_data import *
+from src.detect_scan_port import scans
+from src.detect_anomalies import detect_anomalies
 import threading
 from queue import Queue
 
@@ -38,7 +39,8 @@ def live_detect_scan(interface='eth0'):
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
-            scans(df)
+            scans(df) # port scan detection
+            detect_anomalies(df, 'length', filter="proto == " + str(protocol_map['tcp'])) # anomaly detection
 
     # Start a thread for analysis
     analysis_thread = threading.Thread(target=analyze, daemon=True)
