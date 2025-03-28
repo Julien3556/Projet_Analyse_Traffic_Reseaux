@@ -93,18 +93,18 @@ if __name__ == "__main__":
                 else:
                     print("No file found in the 'data' folder.")
                     
-                if f.endswith(".pcap") or f.endswith(".log"):
+                if file.endswith(".pcap") or file.endswith(".log"):
                     try :
                         dataFrame = parse_data.convert_data(file)
                         print(dataFrame.sample(20))
                         print("File", file, "was successfully converted.")
-                        if f.endswith(".pcap"):
+                        if file.endswith(".pcap"):
                             file = file[:-4] + ".csv"
-                        elif f.endswith(".log"):
+                        elif file.endswith(".log"):
                             file = file[:-3] + ".csv"
                     except :
                         print("File conversion error.")
-                elif f.endswith(".csv"):
+                elif file.endswith(".csv"):
                     dataFrame = pd.read_csv(file)
                 else :
                     print("Error")
