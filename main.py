@@ -49,12 +49,12 @@ Dependencies:
 """
 
 if __name__ == "__main__":
+    if dataFrame.empty:
+        print("The DataFrame is empty.")
+        print("Use the 'select' command.")
     while True:
         print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Port scans \n4 - Detect anomalies \n5 - Generate statistics \n6 - Isolation Forest Model \n7 - Complete scans")
         command = input(">>> : ")
-        if dataFrame.empty:
-            print("The DataFrame is empty.")
-            print("Use the 'select' command.")
         match command.lower():
             case "q" | "0":
                 print("Successfully disconnected.")
