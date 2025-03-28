@@ -48,6 +48,23 @@ Dependencies:
 - os for file handling
 """
 
+def stats(dataFrame):
+    choice = int(input("Select the statistics to generate: \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user>>> : "))
+    match choice :
+        case 1:
+            basic_stat.ip_nbPort(dataFrame)
+        case 2:
+            basic_stat.ip_connexionTime(dataFrame)
+        case 3:
+            basic_stat.destPort_nbConnexion(dataFrame)
+        case 4:
+            basic_stat.maxLength_ip(dataFrame)
+        case _:
+            print("Invalid choice. Please try again.")
+
+
+
+
 if __name__ == "__main__":
     while True:
         print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Data converter \n4 - Port scans \n5 - Detect anomalies \n6 - Generate statistics \n7 - Isolation Forest Model \n8 - Complete scans")
@@ -112,8 +129,7 @@ if __name__ == "__main__":
 
 
             case "6":  # Statistics
-                dataFrame = parse_data.parse_log(file)
-                basic_stat.ip_nbPort(dataFrame)
+                stats(dataFrame)
 
             case "7":  # Isolation Forest
                 dataFrame = parse_data.convert_data(file)
@@ -159,3 +175,7 @@ if __name__ == "__main__":
 
             case _:
                 print("Unknown command.")
+
+
+
+ 
