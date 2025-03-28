@@ -71,7 +71,7 @@ def parse_log(file):
     dataFrame['duration'] = pd.to_numeric(dataFrame['duration'], errors='coerce').fillna(0).astype(float)
     dataFrame['DNS'] = dataFrame['service'] if 'DNS' in dataFrame['service'] else None
     dataFrame = dataFrame.rename(columns={'id.orig_h': 'src', 'id.resp_h': 'dst', 'orig_bytes': 'length', 'ts': 'timestamp', 'id.orig_p': 'src_port', 'id.resp_p': 'dst_port'})
-    return dataFrame[['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'service']]
+    return dataFrame[['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS']]
 
 def convert_data(file):
     if file.endswith('.pcap'):

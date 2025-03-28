@@ -16,7 +16,7 @@ Libraries to install:
 """
 
 # Define column names
-columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
+# columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
 
 # Default file:
 file = 'data/conn_sample.log'
@@ -59,13 +59,7 @@ if __name__ == "__main__":
             case "q" | "0":
                 print("Successfully disconnected.")
                 break
-
-            case "2":  # Show
-                try:
-                    print(dataFrame.head())
-                except:
-                    print("Use the 'convert' command to create a DataFrame first.")
-
+            
             case "1":  # Select
                 folder = "data"
                 print("Available files in the 'data' folder:")
@@ -81,6 +75,17 @@ if __name__ == "__main__":
                     print("File", file, "has been successfully selected.")
                 else:
                     print("No file found in the 'data' folder.")
+
+            case "2":  # Show
+                try:
+                    print(dataFrame.head())
+                except:
+                    print("Use the 'convert' command to create a DataFrame first.")
+
+            case "3":  # Convert
+                dataFrame = parse_data.convert_data(file)
+                print(dataFrame.sample(20))
+                print("File", file, "was successfully converted.")
 
             case "4":  # Port scans
                 imput = int(input("Select the threshold : "))
@@ -102,10 +107,6 @@ if __name__ == "__main__":
                 else:
                     print(f"❌ Error: Protocol '{proto}' is invalid. Available protocols: {', '.join(protocols)}")
 
-            case "3":  # Convert
-                dataFrame = parse_data.convert_data(file)
-                print(dataFrame.sample(20))
-                print("File", file, "was successfully converted.")
 
             case "6":  # Statistics
                 dataFrame = parse_data.parse_log(file)
