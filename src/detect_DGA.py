@@ -18,13 +18,11 @@ def extract_features(domain):
         "entropy": -sum(p * np.log2(p) for p in np.bincount(list(map(ord, domain)), minlength=256) / len(domain) if p > 0)
     }
 
-file = 'data/conn_sample.log'
+file = 'data/advTrain.csv'
 # Charger un dataset avec gestion de l'encodage
 try:
     dataFrame = pd.read_csv(file, sep="\t", header=None, encoding="ISO-8859-1", 
-                            names=['timestamp', 'uid', 'src', 'src_port', 'dst', 'dst_port', 'proto', 'service', 
-                                   'duration', 'orig_bytes', 'resp_bytes', 'conn_state', 'local_orig', 'local_resp', 
-                                   'missed_bytes', 'history', 'orig_pkts', 'orig_ip_bytes', 'resp_pkts', 'resp_ip_bytes', 'DNS'])
+                            names=['DNS'])
 except UnicodeDecodeError:
     print("Erreur d'encodage lors de la lecture du fichier.")
     exit()
@@ -64,8 +62,16 @@ def detect_dga(df, model_path="dga_detector.pkl"):
     return df
 
 # Exemple d'utilisation
+# Example usage
 new_data = dataFrame[['DNS']].dropna().reset_index(drop=True)
+
+# Check if new_data is empty
+if new_data.empty:
+    print("Error: 'new_data' is empty after dropping NaN values!")
+    exit()
+
 print(new_data)
+
 detected = detect_dga(new_data)
 print(detected)
 
