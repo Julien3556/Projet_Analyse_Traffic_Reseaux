@@ -40,7 +40,7 @@ def live_detect_scan(interface='eth0'):
             # Process the batch of packets
             df = pd.DataFrame(batch)
             scans(df) # port scan detection
-            detect_anomalies(df, 'length', filter="proto == " + str(protocol_map['tcp'])) # anomaly detection
+            #detect_anomalies(df, 'length', filter="proto == " + str(protocol_map['tcp'])) # anomaly detection
 
     # Start a thread for analysis
     analysis_thread = threading.Thread(target=analyze, daemon=True)
