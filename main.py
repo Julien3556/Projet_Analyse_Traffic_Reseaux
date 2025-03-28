@@ -83,9 +83,12 @@ if __name__ == "__main__":
                     print("Use the 'convert' command to create a DataFrame first.")
 
             case "3":  # Convert
-                dataFrame = parse_data.convert_data(file)
-                print(dataFrame.sample(20))
-                print("File", file, "was successfully converted.")
+                try :
+                    dataFrame = parse_data.convert_data(file)
+                    print(dataFrame.sample(20))
+                    print("File", file, "was successfully converted.")
+                except :
+                    print("Error convertion file.")
 
             case "4":  # Port scans
                 imput = int(input("Select the threshold : "))
