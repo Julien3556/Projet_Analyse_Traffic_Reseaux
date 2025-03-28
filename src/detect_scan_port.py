@@ -7,11 +7,11 @@ def scans(dataFrame):
     rejected_connections = dataFrame[dataFrame["conn_state"] == "REJ"] # Tableau qui comprend les connexions rejetées
     connections_rejected = rejected_connections.groupby("src")
 
-    fusion = port_scan_attempts.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
+    fusion = suspected_scanners.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
     
 
     if fusion.size == 0:
-        return
+        print("Aucune IPs suspectées de scan de ports")
     else:
         print("IPs suspectées de scan de ports: ")
         print(list(fusion))
