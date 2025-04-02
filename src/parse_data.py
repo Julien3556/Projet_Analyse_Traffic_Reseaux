@@ -73,8 +73,9 @@ def parse_log(file):
     dataFrame['DNS'] = dataFrame['service'] if 'DNS' in dataFrame['service'] else None
     dataFrame = dataFrame.rename(columns={'id.orig_h': 'src', 'id.resp_h': 'dst', 'orig_bytes': 'length', 'ts': 'timestamp', 'id.orig_p': 'src_port', 'id.resp_p': 'dst_port'})
     # Convertir les données en DataFrame
-    df = pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
+    df = pd.DataFrame(dataFrame, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
     # Enregistrer dans un fichier si un nom de fichier de sortie est fourni
+    print("flag1")
     if output_file:
         df.to_csv(output_file, index=False)
         print(f"Data saved to {output_file}")   
