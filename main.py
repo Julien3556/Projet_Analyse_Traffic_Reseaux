@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
             case "7":  # Isolation Forest
                 dataFrame = parse_data.convert_data(file)
-                model = train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
+                model = isolation_forest.train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
                 anomalies = detect_anomalies(model, dataFrame, ['length', 'src_port', 'dst_port'])
                 print(anomalies)
                 
@@ -141,7 +141,7 @@ if __name__ == "__main__":
                 condition = input("Do you want to do Isolation Forest ? (y/N):")
                 if condition == "y":
                     print("\nIsolation Forest")
-                    model = train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
+                    model = isolation_forest.train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
                     anomalies = detect_anomalies(model, dataFrame, ['length', 'src_port', 'dst_port'])
                     print(anomalies)
                     
