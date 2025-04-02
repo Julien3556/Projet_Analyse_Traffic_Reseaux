@@ -88,5 +88,5 @@ if __name__ == '__main__':
     # Use parse_log to load the data
     dataFrame = parse_log("data/conn_sample.log")
     dataFrameWhenAnomalies = detect_anomalies(load_model(".\data\isolation_forest_model.pkl"), dataFrame, ['length', 'src_port', 'dst_port'])
-    destPort_nbConnexion(dataFrame)
+    maxLength_ip(dataFrameWhenAnomalies)
 
