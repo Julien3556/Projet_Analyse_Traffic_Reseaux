@@ -1,19 +1,22 @@
 # Importation des bibliothèques nécessaires
-def scans(dataFrame):
-    port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique() # Tableau qui comprend un grand nb de connexions
-    threshold = int(input("Select the threshold : "))
+import pandas as pd
+
+def scans(dataFrame, threshold):
+    # Count the number of distinct destination ports contacted by each source IP
+    port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique()
     suspected_scanners = port_scan_attempts[port_scan_attempts > threshold]
 
-    rejected_connections = dataFrame[dataFrame["conn_state"] == "REJ"] # Tableau qui comprend les connexions rejetées
-    connections_rejected = rejected_connections.groupby("src")
+    # Filter connections that were rejected
+    rejected_connections = dataFrame[dataFrame["conn_state"] == "REJ"]
+    connections_rejected = rejected_connections.groupby("src").size()
 
-    fusion = port_scan_attempts.index.intersection(connections_rejected.index) # Tableau qui fusionne les 2 tableaux précédents
-    
+    # Find common source IPs between suspected scanners and rejected connections
+    fusion = suspected_scanners.index.intersection(connections_rejected.index)
 
-    if fusion.size == 0:
-        return
+    if len(fusion) == 0:
+        print("Aucune IP suspectée de scan de ports")
     else:
         print("IPs suspectées de scan de ports: ")
         print(list(fusion))
-        print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", fusion.size, "\n")
+        print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", len(fusion), "\n")
 

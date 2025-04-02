@@ -1,3 +1,4 @@
+from os import replace
 import pandas as pd
 import pyshark as ps
 
@@ -34,6 +35,7 @@ def interpret_tcp_flags(flags):
 def parse_pcap(file):
     data = []
     cap = ps.FileCapture(file)
+    output_file = f"{file[:-5]}.csv"
     for package in cap:
         if 'IP' in package:
             src = package.ip.src
@@ -48,11 +50,19 @@ def parse_pcap(file):
             duration = package.tcp.time if 'TCP' in package and hasattr(package.tcp, 'time') else None
             dns = package.dns.qry_name if 'DNS' in package and hasattr(package.dns, 'qry_name') else None
             data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state, duration, dns])
-    return pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
+
+    # Convertir les données en DataFrame
+    df = pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
+    # Enregistrer dans un fichier si un nom de fichier de sortie est fourni
+    if output_file:
+        df.to_csv(output_file, index=False)
+        print(f"Data saved to {output_file}")   
+    return df
 
 def parse_log(file):
+    output_file = f"{file[:-4]}.csv"
     columns = ['ts', 'uid', 'id.orig_h', 'id.orig_p', 'id.resp_h', 'id.resp_p', 'proto', 'service', 'duration', 'orig_bytes', 'resp_bytes', 'conn_state', 'local_orig', 'missed_bytes', 'history', 'orig_pkts', 'orig_ip_bytes', 'resp_pkts', 'resp_ip_bytes', 'tunnel_parents', 'threat', 'sample']
-    dataFrame = pd.read_csv(file, sep="\s+", names=columns)
+    dataFrame = pd.read_csv(file, sep="\t", names=columns)
     dataFrame['ts'] = pd.to_datetime(dataFrame['ts'], errors='coerce')
     dataFrame['id.orig_p'] = pd.to_numeric(dataFrame['id.orig_p'], errors='coerce').fillna(0).astype(int)
     dataFrame['id.resp_p'] = pd.to_numeric(dataFrame['id.resp_p'], errors='coerce').fillna(0).astype(int)
@@ -62,7 +72,13 @@ def parse_log(file):
     dataFrame['duration'] = pd.to_numeric(dataFrame['duration'], errors='coerce').fillna(0).astype(float)
     dataFrame['DNS'] = dataFrame['service'] if 'DNS' in dataFrame['service'] else None
     dataFrame = dataFrame.rename(columns={'id.orig_h': 'src', 'id.resp_h': 'dst', 'orig_bytes': 'length', 'ts': 'timestamp', 'id.orig_p': 'src_port', 'id.resp_p': 'dst_port'})
-    return dataFrame[['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'service']]
+    # Convertir les données en DataFrame
+    df = pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
+    # Enregistrer dans un fichier si un nom de fichier de sortie est fourni
+    if output_file:
+        df.to_csv(output_file, index=False)
+        print(f"Data saved to {output_file}")   
+    return df
 
 def convert_data(file):
     if file.endswith('.pcap'):
