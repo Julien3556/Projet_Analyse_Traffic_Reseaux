@@ -22,7 +22,7 @@ Libraries to install:
 file = 'data/conn_sample.log'
 
 # Initialize a DataFrame
-# dataFrame = pd.DataFrame()
+dataFrame = pd.DataFrame()
 # print(dataFrame)
 
 """
@@ -48,13 +48,30 @@ Dependencies:
 - os for file handling
 """
 
+def stats(dataFrame):
+    choice = int(input("Select the statistics to generate: \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user>>> : "))
+    match choice :
+        case 1:
+            basic_stat.ip_nbPort(dataFrame)
+        case 2:
+            basic_stat.ip_connexionTime(dataFrame)
+        case 3:
+            basic_stat.destPort_nbConnexion(dataFrame)
+        case 4:
+            basic_stat.maxLength_ip(dataFrame)
+        case _:
+            print("Invalid choice. Please try again.")
+
+
+
+
 if __name__ == "__main__":
+    if dataFrame.empty:
+        print("The DataFrame is empty.")
+        print("Use the 'select' command.")
     while True:
-        print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Data converter \n4 - Port scans \n5 - Detect anomalies \n6 - Generate statistics \n7 - Isolation Forest Model \n8 - Complete scans")
+        print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Port scans \n4 - Detect anomalies \n5 - Generate statistics \n6 - Isolation Forest Model \n7 - Complete scans")
         command = input(">>> : ")
-        # if dataFrame.empty:
-        #     print("The DataFrame is empty.")
-        #     print("Use the 'select' command to choose a file or 'convert' to convert a pcap file.")
         match command.lower():
             case "q" | "0":
                 print("Successfully disconnected.")
@@ -70,31 +87,39 @@ if __name__ == "__main__":
                 buffer_file = input("Enter file name: ")
                 buffer_file = "data/" + buffer_file
 
-                if os.path.isfile(buffer_file):
+                if (os.path.isfile(buffer_file) and os.listdir(folder) ) and (buffer_file.endswith(".pcap") or buffer_file.endswith(".log") or buffer_file.endswith(".csv")):
                     file = buffer_file
                     print("File", file, "has been successfully selected.")
                 else:
                     print("No file found in the 'data' folder.")
+                    
+                if file.endswith(".pcap") or file.endswith(".log"):
+                    try :
+                        dataFrame = parse_data.convert_data(file)
+                        print(dataFrame.sample(20))
+                        print("File", file, "was successfully converted.")
+                        if file.endswith(".pcap"):
+                            file = file[:-4] + ".csv"
+                        elif file.endswith(".log"):
+                            file = file[:-3] + ".csv"
+                    except :
+                        print("File conversion error.")
+                elif file.endswith(".csv"):
+                    dataFrame = pd.read_csv(file)
+                else :
+                    print("Error")
 
             case "2":  # Show
                 try:
                     print(dataFrame.head())
                 except:
-                    print("Use the 'convert' command to create a DataFrame first.")
+                    print("Use the 'select' command to create a DataFrame first.")
 
-            case "3":  # Convert
-                try :
-                    dataFrame = parse_data.convert_data(file)
-                    print(dataFrame.sample(20))
-                    print("File", file, "was successfully converted.")
-                except :
-                    print("Error convertion file.")
-
-            case "4":  # Port scans
+            case "3":  # Port scans
                 imput = int(input("Select the threshold : "))
                 detect_scan_port.scans(dataFrame, imput)
 
-            case "5":  # Detect anomalies
+            case "4":  # Detect anomalies
                 protocols = ['icmp', 'igmp', 'tcp', 'udp', 'ipv6', 'gre','esp','ah','icmpv6','ospf','sctp','mpls-in-ip']
                 print("Differents protocols : ")
                 for proto in protocols:
@@ -111,18 +136,22 @@ if __name__ == "__main__":
                     print(f"❌ Error: Protocol '{proto}' is invalid. Available protocols: {', '.join(protocols)}")
 
 
-            case "6":  # Statistics
-                dataFrame = parse_data.parse_log(file)
-                basic_stat.ip_nbPort(dataFrame)
+            case "5":  # Statistics
+                if f.endswith(".pcap") or f.endswith(".log"):
+                    dataFrame = parse_data.parse_log(file)
+                    
+                stats(dataFrame)
 
-            case "7":  # Isolation Forest
-                dataFrame = parse_data.convert_data(file)
+            case "6":  # Isolation Forest
+                if f.endswith(".pcap") or f.endswith(".log"):
+                    dataFrame = parse_data.parse_log(file)
                 model = train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
                 anomalies = detect_anomalies(model, dataFrame, ['length', 'src_port', 'dst_port'])
                 print(anomalies)
                 
-            case "8":  # Complete scans
-                dataFrame = parse_data.convert_data(file)
+            case "7":  # Complete scans
+                if f.endswith(".pcap") or f.endswith(".log"):
+                    dataFrame = parse_data.parse_log(file)
                 
                 print("\nPort scans")
                 detect_scan_port.scans(dataFrame)
@@ -159,3 +188,7 @@ if __name__ == "__main__":
 
             case _:
                 print("Unknown command.")
+
+
+
+ 
