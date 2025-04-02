@@ -55,14 +55,14 @@ def generate_random_traffic(target_ip, ports, interval=0.01):
             generate_udp_traffic(target_ip, ports, interval)
 
 if __name__ == "__main__":
-    target_ip = "127.0.0.1"  # Adresse IP cible (localhost)
-    ports = list(range(1000, 1100))  # Plage de ports à utiliser
-    interval = 0.05  # Intervalle entre les paquets (en secondes)
+    target_ip = "127.0.0.1"  # Adresse IP cible
+    ports = list(range(1000, 2000))  # Plage de ports à utiliser
+    interval = 0.01  # Intervalle entre les paquets (en secondes)
 
     # Lancer des threads pour générer différents types de trafic
     tcp_thread = threading.Thread(target=generate_tcp_traffic, args=(target_ip, ports, interval))
     udp_thread = threading.Thread(target=generate_udp_traffic, args=(target_ip, ports, interval))
-    icmp_thread = threading.Thread(target=generate_icmp_traffic, args=(target_ip, 0.1))
+    icmp_thread = threading.Thread(target=generate_icmp_traffic, args=(target_ip, interval))
 
     tcp_thread.start()
     udp_thread.start()
