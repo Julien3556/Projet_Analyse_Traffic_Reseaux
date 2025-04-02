@@ -27,7 +27,7 @@ def analyze_packet(packet):
 
 def live_detect_scan(interface='eth0'):
     print(f"Real-time capture on interface {interface}...")
-    capture = pyshark.LiveCapture(interface=interface)
+    capture = pyshark.LiveCapture(interface=interface, display_filter='ip')
     packet_queue = Queue()
     batch_size = 1000  # Number of packets to accumulate before analysis
 
@@ -39,7 +39,7 @@ def live_detect_scan(interface='eth0'):
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
-            scans(df) # port scan detection
+            scans(df, 100) # port scan detection
             #detect_anomalies(df, 'length', filter="proto == " + str(protocol_map['tcp'])) # anomaly detection
 
     # Start a thread for analysis
