@@ -1,8 +1,8 @@
 # Import necessary libraries
 import pandas as pd  
 import matplotlib.pyplot as plt  
-from src.parse_data import parse_log  # Import the parse_log function
-from src.isolation_forest import detect_anomalies, load_model  # Import the detect_anomalies function
+from parse_data import parse_log  # Import the parse_log function
+from isolation_forest import detect_anomalies, load_model  # Import the detect_anomalies function
 
 def ip_nbPort(dataFrame):
     # Count the number of distinct ports contacted by each source IP address (src)
@@ -89,5 +89,5 @@ if __name__ == '__main__':
     dataFrame = parse_log("data/conn_sample.log")
 
     dataFrameWhenAnomalies = detect_anomalies(load_model(".\data\isolation_forest_model.pkl"), dataFrame, ['length', 'src_port', 'dst_port'])
-    maxLength_ip(dataFrameWhenAnomalies)
+    destPort_nbConnexion(dataFrame)
 
