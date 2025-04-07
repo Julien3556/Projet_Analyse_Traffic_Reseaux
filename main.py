@@ -1,4 +1,3 @@
-# Import necessary libraries
 import pandas as pd
 import src.detect_scan_port as detect_scan_port
 import src.parse_data as parse_data
