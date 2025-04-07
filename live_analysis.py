@@ -3,28 +3,14 @@ import pandas as pd
 from src.parse_data import *
 from src.detect_scan_port import scans
 from src.detect_anomalies import detect_anomalies
+from src.basic_stat import ip_nbPort, ip_connexionTime, destPort_nbConnexion, maxLength_ip
 import threading
 from queue import Queue
+import matplotlib.pyplot as plt
 
 def analyze_packet(packet):
     """
     Analyzes a network packet and extracts relevant information.
-
-    Arguments:
-        - packet: The network packet to analyze.
-
-    Functionality:
-        - Checks if the packet contains IP information.
-        - Extracts source, destination, protocol, length, timestamp, source and destination ports,
-          connection state, duration, and DNS query if available.
-        - Returns a dictionary with the extracted information.
-
-    Returns:
-        - dict: A dictionary containing the extracted packet information, or None if the packet
-          does not contain the expected attributes.
-
-    Exceptions:
-        - AttributeError: If the packet does not contain the expected attributes.
     """
     try:
         if 'IP' in packet:
@@ -47,33 +33,20 @@ def analyze_packet(packet):
 def live_detect_scan(interface='eth0'):
     """
     Captures and analyzes network traffic in real-time on a given interface.
-
-    Arguments:
-        - interface (str): Name of the network interface to monitor (default: 'eth0').
-
-    Functionality:
-        - Captures network packets in real-time on the specified interface.
-        - Accumulates packets in a queue for batch processing.
-        - Analyzes packets to detect anomalies based on defined criteria.
-        - Prints detected anomalies to the console.
-
-    Exceptions:
-        - Handles user interruption (Ctrl+C) to stop the capture gracefully.
     """
     print(f"Real-time capture on interface {interface}...")
     capture = pyshark.LiveCapture(interface=interface, display_filter='ip')
     packet_queue = Queue()
     batch_size = 1000  # Number of packets to accumulate before analysis
+    output_file = "analyzed_data.csv"
+
+    # Initialize the output file
+    with open(output_file, 'w') as f:
+        f.write("src,dst,proto,length,timestamp,src_port,dst_port,conn_state,duration,DNS\n")
 
     def analyze():
         """
         Processes batches of packets from the queue and detects anomalies.
-
-        Functionality:
-            - Retrieves packets from the queue in batches.
-            - Converts the batch into a DataFrame.
-            - Detects anomalies using the `detect_anomalies` function.
-            - Prints detected anomalies if any are found.
         """
         while True:
             batch = []
@@ -82,10 +55,25 @@ def live_detect_scan(interface='eth0'):
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
-            anomalies_detected = detect_anomalies(df, 'dst_port', threshold=20, filter='proto == "TCP"')
-            if not anomalies_detected.empty:
-                print("Anomalies detected:")
-                print(anomalies_detected)
+
+            # Save the data to the output file
+            df.to_csv(output_file, mode='a', header=False, index=False)
+
+            # Generate real-time visualizations
+            plt.ion()  # Enable interactive mode
+            plt.figure(figsize=(10, 6))
+
+            # Call functions from basic_stat to generate diagrams
+            try:
+                ip_nbPort(df)
+                ip_connexionTime(df)
+                destPort_nbConnexion(df)
+                maxLength_ip(df)
+            except Exception as e:
+                print(f"Error generating diagrams: {e}")
+
+            plt.pause(0.1)  # Pause to update the plots
+            plt.clf()  # Clear the figure for the next batch
 
     # Start a thread for analysis
     analysis_thread = threading.Thread(target=analyze, daemon=True)
