@@ -56,13 +56,17 @@ def stats(dataFrame):
                 print("Disconnected.")
                 break
             case "1":
-                basic_stat.ip_nbPort(dataFrame)
+                limit = int(input("Select the minimum number of ports : "))
+                basic_stat.ip_nbPort(dataFrame,limit)
             case "2":
-                basic_stat.ip_connexionTime(dataFrame)
+                limit = int(input("Select the minimum duration : "))
+                basic_stat.ip_connexionTime(dataFrame,limit)
             case "3":
-                basic_stat.destPort_nbConnexion(dataFrame)
+                limit = int(input("Select the minimum number of connections : "))
+                basic_stat.destPort_nbConnexion(dataFrame,limit)
             case "4":
-                basic_stat.maxLength_ip(dataFrame)
+                limit = int(input("Select the minimum packets's size (bytes): "))
+                basic_stat.maxLength_ip(dataFrame,limit)
             case _:
                 print("Invalid choice. Please try again.")
             
