@@ -5,39 +5,54 @@ from src.parse_data import parse_log  # Import the parse_log function
 from src.isolation_forest import detect_anomalies, load_model  # Import the detect_anomalies function
 
 def ip_nbPort(dataFrame):
-    # Count the number of distinct ports contacted by each source IP address (src)
-    port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique()
+    """
+    Analyzes the number of distinct ports contacted by each source IP address.
 
-    # Filter: keep only IPs that contacted more than a specified number of distinct ports
+    Arguments:
+        - dataFrame: pandas.DataFrame containing network traffic data.
+
+    Functionality:
+        - Groups data by source IP address and counts the number of distinct destination ports.
+        - Filters IPs that contacted more than a user-specified number of ports.
+        - Displays a bar chart of the results.
+
+    Returns:
+        - None
+    """
+    port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique()
     limit = int(input("Select the minimum number of ports : "))
     port_scan_attempts = port_scan_attempts[port_scan_attempts > limit]
     print(port_scan_attempts)
 
-    # Create the chart
     port_scan_attempts.plot(kind="bar", color="skyblue", edgecolor="black")
-
-    # Add labels and title to the chart
     plt.xlabel("Source IP address")  
     plt.ylabel("Number of distinct ports contacted")  
     plt.title("Number of connection attempts per IP address")  
     plt.xticks(rotation=45, fontsize=6)  
     plt.grid(axis="y", linestyle="--", alpha=0.7)  
-
-    # Display the chart
     plt.show()
 
 
 def ip_connexionTime(dataFrame):
-    connexionTime = dataFrame.groupby("src")["duration"].max()
+    """
+    Analyzes the maximum connection duration for each source IP address.
 
-    # Filter: keep only IPs that the average connection duration is greater than a specified value
+    Arguments:
+        - dataFrame: pandas.DataFrame containing network traffic data.
+
+    Functionality:
+        - Groups data by source IP address and calculates the maximum connection duration.
+        - Filters IPs with a maximum duration greater than a user-specified value.
+        - Displays a bar chart of the results.
+
+    Returns:
+        - None
+    """
+    connexionTime = dataFrame.groupby("src")["duration"].max()
     limit = float(input("Select the minimum duration : "))
     connexionTime = connexionTime[connexionTime > limit]
 
-    # Create the chart
     connexionTime.plot(kind="bar", color="skyblue", edgecolor="black")
-
-    # Add labels and title to the chart
     plt.xlabel("Source IP address")
     plt.ylabel("Maximum connection duration")
     plt.title("Connection duration per IP address")  
@@ -47,46 +62,70 @@ def ip_connexionTime(dataFrame):
 
 
 def destPort_nbConnexion(dataFrame):
-    # Count the number of connections to each destination port
-    port_connexions = dataFrame.groupby("dst_port").size()
+    """
+    Analyzes the number of connections to each destination port.
 
-    # Filter: keep only destination ports that received more than a specified number of connections
+    Arguments:
+        - dataFrame: pandas.DataFrame containing network traffic data.
+
+    Functionality:
+        - Groups data by destination port and counts the number of connections.
+        - Filters ports with more connections than a user-specified threshold.
+        - Displays a bar chart of the results.
+
+    Returns:
+        - None
+    """
+    port_connexions = dataFrame.groupby("dst_port").size()
     limit = int(input("Select the minimum number of connections : "))
     port_connexions = port_connexions[port_connexions > limit]
 
-    # Create the chart
     port_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
-
-    # Add labels and title to the chart
     plt.xlabel("Destination port")  
     plt.ylabel("Number of connections")  
     plt.title("Number of connections per destination port")  
     plt.xticks(rotation=45, fontsize=6)  
     plt.grid(axis="y", linestyle="--", alpha=0.7)  
-
-    # Display the chart
     plt.show()
 
 
 def maxLength_ip(dataFrame):
+    """
+    Analyzes the maximum packet size transmitted by each source IP address.
+
+    Arguments:
+        - dataFrame: pandas.DataFrame containing network traffic data.
+
+    Functionality:
+        - Groups data by source IP address and calculates the maximum packet size.
+        - Filters IPs with a maximum packet size below a user-specified threshold.
+        - Displays a bar chart of the results.
+
+    Returns:
+        - None
+    """
     ip_connexions = dataFrame.groupby("src")["length"].max()
     limit = int(input("Select the minimum packets's size (bytes): "))
     ip_connexions = ip_connexions[ip_connexions < limit]
-    ip_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
 
-    # Add labels and title to the chart
+    ip_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
     plt.xlabel("IP of packet's transmitter")  
-    plt.ylabel("Maxium size above all the packet transmitted")  
-    plt.title("Maxium size above all the packet transmitted per user")  
+    plt.ylabel("Maximum size of transmitted packets")  
+    plt.title("Maximum packet size per user")  
     plt.xticks(rotation=45, fontsize=6)  
     plt.grid(axis="y", linestyle="--", alpha=0.7)  
     plt.show()
 
-    
 
 if __name__ == '__main__':
-    # Use parse_log to load the data
+    """
+    Main function to analyze network traffic data.
+
+    Functionality:
+        - Loads network traffic data using the `parse_log` function.
+        - Detects anomalies using a pre-trained isolation forest model.
+        - Calls analysis functions to generate statistics and visualizations.
+    """
     dataFrame = parse_log("data/conn_sample.log")
     dataFrameWhenAnomalies = detect_anomalies(load_model(".\data\isolation_forest_model.pkl"), dataFrame, ['length', 'src_port', 'dst_port'])
-    maxLength_ip(dataFrameWhenAnomalies)
-
+    destPort_nbConnexion(dataFrame)

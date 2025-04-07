@@ -7,6 +7,25 @@ import threading
 from queue import Queue
 
 def analyze_packet(packet):
+    """
+    Analyzes a network packet and extracts relevant information.
+
+    Arguments:
+        - packet: The network packet to analyze.
+
+    Functionality:
+        - Checks if the packet contains IP information.
+        - Extracts source, destination, protocol, length, timestamp, source and destination ports,
+          connection state, duration, and DNS query if available.
+        - Returns a dictionary with the extracted information.
+
+    Returns:
+        - dict: A dictionary containing the extracted packet information, or None if the packet
+          does not contain the expected attributes.
+
+    Exceptions:
+        - AttributeError: If the packet does not contain the expected attributes.
+    """
     try:
         if 'IP' in packet:
             return {
@@ -26,12 +45,36 @@ def analyze_packet(packet):
     return None
 
 def live_detect_scan(interface='eth0'):
+    """
+    Captures and analyzes network traffic in real-time on a given interface.
+
+    Arguments:
+        - interface (str): Name of the network interface to monitor (default: 'eth0').
+
+    Functionality:
+        - Captures network packets in real-time on the specified interface.
+        - Accumulates packets in a queue for batch processing.
+        - Analyzes packets to detect anomalies based on defined criteria.
+        - Prints detected anomalies to the console.
+
+    Exceptions:
+        - Handles user interruption (Ctrl+C) to stop the capture gracefully.
+    """
     print(f"Real-time capture on interface {interface}...")
     capture = pyshark.LiveCapture(interface=interface, display_filter='ip')
     packet_queue = Queue()
     batch_size = 1000  # Number of packets to accumulate before analysis
 
     def analyze():
+        """
+        Processes batches of packets from the queue and detects anomalies.
+
+        Functionality:
+            - Retrieves packets from the queue in batches.
+            - Converts the batch into a DataFrame.
+            - Detects anomalies using the `detect_anomalies` function.
+            - Prints detected anomalies if any are found.
+        """
         while True:
             batch = []
             while len(batch) < batch_size:
@@ -39,8 +82,10 @@ def live_detect_scan(interface='eth0'):
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
-            scans(df, 100) # port scan detection
-            #detect_anomalies(df, 'length', filter="proto == " + str(protocol_map['tcp'])) # anomaly detection
+            anomalies_detected = detect_anomalies(df, 'dst_port', threshold=20, filter='proto == "TCP"')
+            if not anomalies_detected.empty:
+                print("Anomalies detected:")
+                print(anomalies_detected)
 
     # Start a thread for analysis
     analysis_thread = threading.Thread(target=analyze, daemon=True)

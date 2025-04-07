@@ -1,7 +1,21 @@
-# Importation des bibliothèques nécessaires
 import pandas as pd
 
 def scans(dataFrame, threshold):
+    """
+    Detects port scan attempts in a network DataFrame.
+    
+    Arguments:
+        - dataFrame: pandas.DataFrame with columns "src", "dst_port", "conn_state".
+        - threshold: int, threshold of distinct ports to suspect a scan.
+    
+    Functionality:
+        - Counts the distinct destination ports contacted by each source IP.
+        - Identifies suspicious IPs exceeding the threshold.
+        - Filters rejected connections ("REJ") by source IP.
+        - Finds common IPs between suspects and rejected connections.
+        - Displays suspicious IPs or a message if none are detected.
+    """
+    
     # Count the number of distinct destination ports contacted by each source IP
     port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique()
     suspected_scanners = port_scan_attempts[port_scan_attempts > threshold]
@@ -14,9 +28,8 @@ def scans(dataFrame, threshold):
     fusion = suspected_scanners.index.intersection(connections_rejected.index)
 
     if len(fusion) == 0:
-        print("Aucune IP suspectée de scan de ports")
+        print("No IPs suspected of port scanning")
     else:
-        print("IPs suspectées de scan de ports: ")
+        print("IPs suspected of port scanning: ")
         print(list(fusion))
-        print("\n🚨 SCAN DE PORTS DÉTECTÉ 🚨\n", "Nb : ", len(fusion), "\n")
-
+        print("\n🚨 PORT SCAN DETECTED 🚨\n", "Count: ", len(fusion), "\n")
