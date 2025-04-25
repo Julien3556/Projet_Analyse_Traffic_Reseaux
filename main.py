@@ -49,22 +49,35 @@ Dependencies:
 
 def stats(dataFrame):
     while True:
-        print("Select the statistics to generate: \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user\n>>> : ")
+        print("Select the statistics to generate: \n0 - Quit \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user\n>>> : ")
         choice = input(">>> : ")
         match choice :
             case "q" | "0":
                 print("Disconnected.")
                 break
             case "1":
-                basic_stat.ip_nbPort(dataFrame)
+                limit = int(input("Select the minimum number of ports : "))
+                basic_stat.ip_nbPort(dataFrame,limit)
             case "2":
-                basic_stat.ip_connexionTime(dataFrame)
+                limit = int(input("Select the minimum duration : "))
+                basic_stat.ip_connexionTime(dataFrame,limit)
             case "3":
-                basic_stat.destPort_nbConnexion(dataFrame)
+                limit = int(input("Select the minimum number of connections : "))
+                basic_stat.destPort_nbConnexion(dataFrame,limit)
             case "4":
-                basic_stat.maxLength_ip(dataFrame)
+                limit = int(input("Select the minimum packets's size (bytes): "))
+                basic_stat.maxLength_ip(dataFrame,limit)
             case _:
                 print("Invalid choice. Please try again.")
+
+
+
+
+if __name__ == "__main__":
+    if dataFrame.empty:
+        print("The DataFrame is empty.")
+        print("Use the 'select' command.")
+
             
 def select():
     folder = "data"
@@ -125,16 +138,11 @@ def forest(dataFrame):
         print(anomalies)
     except:
         print("Error in isolation forest")
-        
-    
-def empty_dataFrame(dataFrame):
+
+if __name__ == "__main__":
     if dataFrame.empty:
         print("The DataFrame is empty.")
         print("Use the 'select' command.")
-
-
-if __name__ == "__main__":
-    empty_dataFrame(dataFrame)
     while True:
         print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Port scans \n4 - Detect anomalies \n5 - Generate statistics \n6 - Isolation Forest Model \n7 - Complete scans")
         command = input(">>> : ")
@@ -150,14 +158,20 @@ if __name__ == "__main__":
                     print("Error in select")
 
             case "2":  # Show
-                empty_dataFrame(dataFrame)
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 try:
                     print(dataFrame.head())
                 except:
                     print("Use the 'select' command to create a DataFrame first.")
 
             case "3":  # Port scans
-                empty_dataFrame(dataFrame)
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 try:
                     imput = int(input("Select the threshold : "))
                     detect_scan_port.scans(dataFrame, imput)
@@ -165,19 +179,31 @@ if __name__ == "__main__":
                     print("Error in detect_scan_port")
 
             case "4":  # Detect anomalies
-                empty_dataFrame(dataFrame)
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 detect(dataFrame)
 
             case "5":  # Statistics
-                empty_dataFrame(dataFrame)          
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue          
                 stats(dataFrame)
 
             case "6":  # Isolation Forest
-                empty_dataFrame(dataFrame)
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 forest(dataFrame)
                 
             case "7":  # Complete scans
-                empty_dataFrame(dataFrame)
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 
                 print("\nPort scans")
                 imput = int(input("Select the threshold : "))
@@ -199,4 +225,3 @@ if __name__ == "__main__":
 
 
 
- 

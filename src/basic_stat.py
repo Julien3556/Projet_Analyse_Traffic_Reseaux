@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from src.parse_data import parse_log  # Import the parse_log function
 from src.isolation_forest import detect_anomalies, load_model  # Import the detect_anomalies function
 
-def ip_nbPort(dataFrame):
+def ip_nbPort(dataFrame, limit):
     """
     Analyzes the number of distinct ports contacted by each source IP address.
 
@@ -20,7 +20,6 @@ def ip_nbPort(dataFrame):
         - None
     """
     port_scan_attempts = dataFrame.groupby("src")["dst_port"].nunique()
-    limit = int(input("Select the minimum number of ports : "))
     port_scan_attempts = port_scan_attempts[port_scan_attempts > limit]
     print(port_scan_attempts)
 
@@ -33,7 +32,7 @@ def ip_nbPort(dataFrame):
     plt.show()
 
 
-def ip_connexionTime(dataFrame):
+def ip_connexionTime(dataFrame, limit):
     """
     Analyzes the maximum connection duration for each source IP address.
 
@@ -49,7 +48,6 @@ def ip_connexionTime(dataFrame):
         - None
     """
     connexionTime = dataFrame.groupby("src")["duration"].max()
-    limit = float(input("Select the minimum duration : "))
     connexionTime = connexionTime[connexionTime > limit]
 
     connexionTime.plot(kind="bar", color="skyblue", edgecolor="black")
@@ -61,7 +59,7 @@ def ip_connexionTime(dataFrame):
     plt.show()
 
 
-def destPort_nbConnexion(dataFrame):
+def destPort_nbConnexion(dataFrame, limit):
     """
     Analyzes the number of connections to each destination port.
 
@@ -77,7 +75,6 @@ def destPort_nbConnexion(dataFrame):
         - None
     """
     port_connexions = dataFrame.groupby("dst_port").size()
-    limit = int(input("Select the minimum number of connections : "))
     port_connexions = port_connexions[port_connexions > limit]
 
     port_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
@@ -89,7 +86,7 @@ def destPort_nbConnexion(dataFrame):
     plt.show()
 
 
-def maxLength_ip(dataFrame):
+def maxLength_ip(dataFrame, limit):
     """
     Analyzes the maximum packet size transmitted by each source IP address.
 
@@ -105,7 +102,6 @@ def maxLength_ip(dataFrame):
         - None
     """
     ip_connexions = dataFrame.groupby("src")["length"].max()
-    limit = int(input("Select the minimum packets's size (bytes): "))
     ip_connexions = ip_connexions[ip_connexions < limit]
 
     ip_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
