@@ -58,13 +58,24 @@ def live_detect_scan(interface='eth0'):
             df.to_csv(output_file, mode='a', header=False, index=False)
 
             try:
-                # Detect anomalies in the data
-                anomalies = detect_anomalies(df)
-                if anomalies:
-                    print("\n=== Detected Anomalies ===")
-                    for anomaly in anomalies:
-                        print(anomaly)
-                    print("==========================")
+                # Détection de scans de ports
+                port_scan_anomalies = detect_anomalies(df, column='dst_port', threshold=100)
+                if not port_scan_anomalies.empty:
+                    print("\n=== Scans de ports détectés ===")
+                    print(port_scan_anomalies)
+
+                # Détection de transferts volumineux
+                data_anomalies = detect_anomalies(df, column='length')
+                if not data_anomalies.empty:
+                    print("\n=== Transferts de données suspects ===")
+                    print(data_anomalies)
+                    
+                # Analyse des connexions par IP
+                IP_anomalies = detect_anomalies(df, column='src')
+                if not IP_anomalies.empty:
+                    print("\n=== Anomalies de connexion par IP ===")
+                    print(IP_anomalies)
+                    
             except Exception as e:
                 print(f"Error processing data for anomaly detection: {e}")
 
