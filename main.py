@@ -49,7 +49,7 @@ Dependencies:
 """
 
 def stats(dataFrame):
-    choice = int(input("Select the statistics to generate: \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user>>> : "))
+    choice = int(input("Select the statistics to generate: \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user\n>>> : "))
     match choice :
         case 1:
             basic_stat.ip_nbPort(dataFrame)
@@ -191,4 +191,3 @@ if __name__ == "__main__":
 
 
 
- 
