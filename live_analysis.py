@@ -3,10 +3,15 @@ import pandas as pd
 from src.parse_data import *
 from src.detect_scan_port import scans
 from src.detect_anomalies import detect_anomalies
+from src.basic_stat import ip_nbPort, ip_connexionTime, destPort_nbConnexion, maxLength_ip
 import threading
 from queue import Queue
+import matplotlib.pyplot as plt
 
 def analyze_packet(packet):
+    """
+    Analyzes a network packet and extracts relevant information.
+    """
     try:
         if 'IP' in packet:
             return {
@@ -26,12 +31,23 @@ def analyze_packet(packet):
     return None
 
 def live_detect_scan(interface='eth0'):
+    """
+    Captures and analyzes network traffic in real-time on a given interface.
+    """
     print(f"Real-time capture on interface {interface}...")
-    capture = pyshark.LiveCapture(interface=interface)
+    capture = pyshark.LiveCapture(interface=interface, display_filter='ip')
     packet_queue = Queue()
     batch_size = 1000  # Number of packets to accumulate before analysis
+    output_file = "analyzed_data.csv"
+
+    # Initialize the output file
+    with open(output_file, 'w') as f:
+        f.write("src,dst,proto,length,timestamp,src_port,dst_port,conn_state,duration,DNS\n")
 
     def analyze():
+        """
+        Processes batches of packets from the queue and detects anomalies.
+        """
         while True:
             batch = []
             while len(batch) < batch_size:
@@ -39,8 +55,25 @@ def live_detect_scan(interface='eth0'):
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
-            scans(df) # port scan detection
-            #detect_anomalies(df, 'length', filter="proto == " + str(protocol_map['tcp'])) # anomaly detection
+
+            # Save the data to the output file
+            df.to_csv(output_file, mode='a', header=False, index=False)
+
+            # Generate real-time visualizations
+            plt.ion()  # Enable interactive mode
+            plt.figure(figsize=(10, 6))
+
+            # Call functions from basic_stat to generate diagrams
+            try:
+                ip_nbPort(df)
+                ip_connexionTime(df)
+                destPort_nbConnexion(df)
+                maxLength_ip(df)
+            except Exception as e:
+                print(f"Error generating diagrams: {e}")
+
+            plt.pause(0.1)  # Pause to update the plots
+            plt.clf()  # Clear the figure for the next batch
 
     # Start a thread for analysis
     analysis_thread = threading.Thread(target=analyze, daemon=True)

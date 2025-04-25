@@ -5,7 +5,23 @@ import time
 import threading
 
 def generate_tcp_traffic(target_ip, ports, interval=0.05):
-    """Génère du trafic TCP vers des ports aléatoires."""
+    """
+    Generates TCP traffic to random ports.
+
+    Arguments:
+        - target_ip: str, the target IP address.
+        - ports: list, a list of ports to send traffic to.
+        - interval: float, the time interval between packets (default: 0.05 seconds).
+
+    Functionality:
+        - Randomly selects a port from the provided list.
+        - Sends a TCP packet to the selected port.
+        - Handles connection errors gracefully.
+
+    Exceptions:
+        - ConnectionRefusedError: If the connection to the port is refused.
+        - Exception: For any other errors during traffic generation.
+    """
     while True:
         try:
             port = random.choice(ports)
@@ -20,7 +36,22 @@ def generate_tcp_traffic(target_ip, ports, interval=0.05):
         time.sleep(interval)
 
 def generate_udp_traffic(target_ip, ports, interval=0.05):
-    """Génère du trafic UDP vers des ports aléatoires."""
+    """
+    Generates UDP traffic to random ports.
+
+    Arguments:
+        - target_ip: str, the target IP address.
+        - ports: list, a list of ports to send traffic to.
+        - interval: float, the time interval between packets (default: 0.05 seconds).
+
+    Functionality:
+        - Randomly selects a port from the provided list.
+        - Sends a UDP packet to the selected port.
+        - Handles errors gracefully.
+
+    Exceptions:
+        - Exception: For any errors during traffic generation.
+    """
     while True:
         try:
             port = random.choice(ports)
@@ -32,10 +63,23 @@ def generate_udp_traffic(target_ip, ports, interval=0.05):
         time.sleep(interval)
 
 def generate_icmp_traffic(target_ip, interval=0.5):
-    """Génère du trafic ICMP (ping)."""
+    """
+    Generates ICMP traffic (ping).
+
+    Arguments:
+        - target_ip: str, the target IP address.
+        - interval: float, the time interval between packets (default: 0.5 seconds).
+
+    Functionality:
+        - Uses the `ping` command to send ICMP packets.
+        - Prints the result of each ping attempt.
+
+    Exceptions:
+        - KeyboardInterrupt: Stops the ICMP traffic generation when interrupted.
+    """
     try:
         while True:
-            # Utilisation de la commande ping pour générer du trafic ICMP
+            # Use the ping command to generate ICMP traffic
             response = os.system(f"ping -c 1 {target_ip} > /dev/null 2>&1")
             if response == 0:
                 print(f"Sent ICMP packet to {target_ip}")
@@ -46,7 +90,18 @@ def generate_icmp_traffic(target_ip, interval=0.5):
         print("Stopped ICMP traffic generation.")
 
 def generate_random_traffic(target_ip, ports, interval=0.01):
-    """Génère un mélange de trafic TCP et UDP."""
+    """
+    Generates a mix of TCP and UDP traffic.
+
+    Arguments:
+        - target_ip: str, the target IP address.
+        - ports: list, a list of ports to send traffic to.
+        - interval: float, the time interval between packets (default: 0.01 seconds).
+
+    Functionality:
+        - Randomly selects between TCP and UDP traffic generation.
+        - Calls the appropriate function to generate the selected traffic type.
+    """
     while True:
         protocol = random.choice(["TCP", "UDP"])
         if protocol == "TCP":
@@ -55,20 +110,28 @@ def generate_random_traffic(target_ip, ports, interval=0.01):
             generate_udp_traffic(target_ip, ports, interval)
 
 if __name__ == "__main__":
-    target_ip = "127.0.0.1"  # Adresse IP cible (localhost)
-    ports = list(range(1000, 1100))  # Plage de ports à utiliser
-    interval = 0.05  # Intervalle entre les paquets (en secondes)
+    """
+    Main function to start traffic generation.
 
-    # Lancer des threads pour générer différents types de trafic
+    Functionality:
+        - Defines the target IP, port range, and interval.
+        - Starts threads for generating TCP, UDP, and ICMP traffic.
+        - Waits for the threads to complete (infinite loop).
+    """
+    target_ip = "192.168.254.131"  # Target IP address
+    ports = list(range(1000, 2000))  # Range of ports to use
+    interval = 0.01  # Interval between packets (in seconds)
+
+    # Start threads to generate different types of traffic
     tcp_thread = threading.Thread(target=generate_tcp_traffic, args=(target_ip, ports, interval))
     udp_thread = threading.Thread(target=generate_udp_traffic, args=(target_ip, ports, interval))
-    icmp_thread = threading.Thread(target=generate_icmp_traffic, args=(target_ip, 0.1))
+    icmp_thread = threading.Thread(target=generate_icmp_traffic, args=(target_ip, interval))
 
     tcp_thread.start()
     udp_thread.start()
     icmp_thread.start()
 
-    # Attendre que les threads se terminent (ils tournent en boucle infinie)
+    # Wait for the threads to finish (they run in infinite loops)
     tcp_thread.join()
     udp_thread.join()
     icmp_thread.join()

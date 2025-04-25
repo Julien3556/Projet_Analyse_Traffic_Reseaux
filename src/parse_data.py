@@ -2,7 +2,7 @@ from os import replace
 import pandas as pd
 import pyshark as ps
 
-# Dictionnaire de mappage des numéros de protocole aux noms de protocole
+# Dictionary mapping protocol numbers to protocol names
 protocol_map = {
     1: 'ICMP',       # Internet Control Message Protocol
     2: 'IGMP',       # Internet Group Management Protocol
@@ -19,6 +19,15 @@ protocol_map = {
 }
 
 def interpret_tcp_flags(flags):
+    """
+    Interprets TCP flags and returns their description.
+
+    Arguments:
+        - flags: int, the TCP flags as a hexadecimal value.
+
+    Returns:
+        - str: Description of the TCP flags or 'UNKNOWN' if not recognized.
+    """
     flag_descriptions = {
         0x0002: 'SYN',
         0x0010: 'ACK',
@@ -33,6 +42,21 @@ def interpret_tcp_flags(flags):
     return flag_descriptions.get(flags, 'UNKNOWN')
 
 def parse_pcap(file):
+    """
+    Parses a PCAP file and extracts network packet data into a DataFrame.
+
+    Arguments:
+        - file: str, path to the PCAP file to analyze.
+
+    Functionality:
+        - Extracts source/destination IPs, protocol, length, timestamp, ports, and other details.
+        - Maps protocol numbers to protocol names.
+        - Interprets TCP flags and DNS queries if available.
+        - Saves the extracted data to a CSV file.
+
+    Returns:
+        - pd.DataFrame: A DataFrame containing the extracted network packet information.
+    """
     data = []
     cap = ps.FileCapture(file)
     output_file = f"{file[:-5]}.csv"
@@ -51,15 +75,30 @@ def parse_pcap(file):
             dns = package.dns.qry_name if 'DNS' in package and hasattr(package.dns, 'qry_name') else None
             data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state, duration, dns])
 
-    # Convertir les données en DataFrame
+    # Convert data to DataFrame
     df = pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
-    # Enregistrer dans un fichier si un nom de fichier de sortie est fourni
+    # Save to a file if an output filename is provided
     if output_file:
         df.to_csv(output_file, index=False)
         print(f"Data saved to {output_file}")   
     return df
 
 def parse_log(file):
+    """
+    Parses a network log file and converts it into a DataFrame.
+
+    Arguments:
+        - file: str, path to the network log file.
+
+    Functionality:
+        - Reads the log file with predefined column names.
+        - Converts timestamps and numeric fields to appropriate types.
+        - Renames columns for consistency with other data sources.
+        - Saves the transformed data to a CSV file.
+
+    Returns:
+        - pd.DataFrame: A DataFrame containing the transformed log data.
+    """
     output_file = f"{file[:-4]}.csv"
     columns = ['ts', 'uid', 'id.orig_h', 'id.orig_p', 'id.resp_h', 'id.resp_p', 'proto', 'service', 'duration', 'orig_bytes', 'resp_bytes', 'conn_state', 'local_orig', 'missed_bytes', 'history', 'orig_pkts', 'orig_ip_bytes', 'resp_pkts', 'resp_ip_bytes', 'tunnel_parents', 'threat', 'sample']
     dataFrame = pd.read_csv(file, sep="\t", names=columns)
@@ -68,19 +107,32 @@ def parse_log(file):
     dataFrame['id.resp_p'] = pd.to_numeric(dataFrame['id.resp_p'], errors='coerce').fillna(0).astype(int)
     dataFrame['orig_bytes'] = pd.to_numeric(dataFrame['orig_bytes'], errors='coerce').fillna(0).astype(int)
     dataFrame['proto'] = dataFrame['proto'].astype(str)
-    dataFrame['orig_bytes'] = pd.to_numeric(dataFrame['orig_bytes'], errors='coerce').fillna(0).astype(int)
     dataFrame['duration'] = pd.to_numeric(dataFrame['duration'], errors='coerce').fillna(0).astype(float)
     dataFrame['DNS'] = dataFrame['service'] if 'DNS' in dataFrame['service'] else None
     dataFrame = dataFrame.rename(columns={'id.orig_h': 'src', 'id.resp_h': 'dst', 'orig_bytes': 'length', 'ts': 'timestamp', 'id.orig_p': 'src_port', 'id.resp_p': 'dst_port'})
-    # Convertir les données en DataFrame
-    df = pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
-    # Enregistrer dans un fichier si un nom de fichier de sortie est fourni
+    # Save to a file if an output filename is provided
     if output_file:
-        df.to_csv(output_file, index=False)
+        dataFrame.to_csv(output_file, index=False)
         print(f"Data saved to {output_file}")   
-    return df
+    return dataFrame
 
 def convert_data(file):
+    """
+    Converts data from a file based on its type.
+
+    Arguments:
+        - file: str, path to the file to process.
+
+    Functionality:
+        - Determines the file type based on its extension (.pcap or .log).
+        - Calls the appropriate parsing function (`parse_pcap` or `parse_log`).
+
+    Returns:
+        - object: The result of processing the file.
+
+    Exceptions:
+        - ValueError: If the file has an unsupported extension.
+    """
     if file.endswith('.pcap'):
         print("The current file is indeed a .pcap file.")
         return parse_pcap(file)
@@ -91,6 +143,5 @@ def convert_data(file):
         raise ValueError('Unsupported file type')
 
 if __name__ == '__main__':
-    data = convert_data('data/sample.pcap')
     data = convert_data('data/sample.pcap')
     print(data.sample(20))
