@@ -1,12 +1,10 @@
 import pyshark
 import pandas as pd
 from src.parse_data import *
-from src.detect_scan_port import scans
-from src.detect_anomalies import detect_anomalies
 from src.basic_stat import ip_nbPort, ip_connexionTime, destPort_nbConnexion, maxLength_ip
+from src.detect_anomalies import detect_anomalies  # Import de la fonction pour détecter les anomalies
 import threading
 from queue import Queue
-import matplotlib.pyplot as plt
 
 def analyze_packet(packet):
     """
@@ -36,9 +34,9 @@ def live_detect_scan(interface='eth0'):
     """
     print(f"Real-time capture on interface {interface}...")
     capture = pyshark.LiveCapture(interface=interface, display_filter='ip')
-    packet_queue = Queue()
-    batch_size = 1000  # Number of packets to accumulate before analysis
-    output_file = "analyzed_data.csv"
+    packet_queue = Queue(maxsize=10000)
+    batch_size = 1000 
+    output_file = "data/live_analyzed_data.csv"
 
     # Initialize the output file
     with open(output_file, 'w') as f:
@@ -51,7 +49,7 @@ def live_detect_scan(interface='eth0'):
         while True:
             batch = []
             while len(batch) < batch_size:
-                packet_info = packet_queue.get()  # Blocks until a packet is available
+                packet_info = packet_queue.get(timeout=1)  # Blocks until a packet is available
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
@@ -59,21 +57,16 @@ def live_detect_scan(interface='eth0'):
             # Save the data to the output file
             df.to_csv(output_file, mode='a', header=False, index=False)
 
-            # Generate real-time visualizations
-            plt.ion()  # Enable interactive mode
-            plt.figure(figsize=(10, 6))
-
-            # Call functions from basic_stat to generate diagrams
             try:
-                ip_nbPort(df)
-                ip_connexionTime(df)
-                destPort_nbConnexion(df)
-                maxLength_ip(df)
+                # Detect anomalies in the data
+                anomalies = detect_anomalies(df)
+                if anomalies:
+                    print("\n=== Detected Anomalies ===")
+                    for anomaly in anomalies:
+                        print(anomaly)
+                    print("==========================")
             except Exception as e:
-                print(f"Error generating diagrams: {e}")
-
-            plt.pause(0.1)  # Pause to update the plots
-            plt.clf()  # Clear the figure for the next batch
+                print(f"Error processing data for anomaly detection: {e}")
 
     # Start a thread for analysis
     analysis_thread = threading.Thread(target=analyze, daemon=True)
