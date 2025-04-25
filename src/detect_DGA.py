@@ -50,14 +50,14 @@ print(classification_report(y_test, clf.predict(X_test)))
 
 # === 4. TESTER UN DOMAINE PERSONNALISÉ ===
 
-def detect_domain(domain):
+def detect_domain(domain, ip):
     feat = extract_features(domain)
     prediction = clf.predict([feat])[0]
     proba = clf.predict_proba([feat])[0][prediction]
     if prediction == 1:
-        print(f"⚠️ Domaine DGA détecté : {domain} (confiance : {proba:.2f})")
+        print(f"⚠️ Domaine DGA détecté : {domain} IP : {ip} (confiance : {proba:.2f})")
     else:
-        print(f"✅ Domaine normal : {domain} (confiance : {proba:.2f})")
+        print(f"✅ Domaine normal : {domain} IP : {ip} (confiance : {proba:.2f})")
 
 # # === 5. EXEMPLE D’UTILISATION ===
 # while True:
@@ -76,6 +76,7 @@ print(dataFrame.head())
 print("=== Parcours des domaines ===")
 for index, row in dataFrame.iterrows():
     domaine = row['DNS'] # A changer entre DNS ou domain
-    detect_domain(domaine)
+    ip = row['src'] # A changer entre DNS ou domain
+    detect_domain(domaine, ip)
     
     
