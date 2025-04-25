@@ -4,6 +4,7 @@ import src.parse_data as parse_data
 import src.detect_anomalies as detect_anomalies
 import src.basic_stat as basic_stat
 import src.isolation_forest as isolation_forest
+import src.detect_DGA as detect_DGA
 import os
 
 """
@@ -144,7 +145,9 @@ if __name__ == "__main__":
         print("The DataFrame is empty.")
         print("Use the 'select' command.")
     while True:
-        print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs \n3 - Port scans \n4 - Detect anomalies \n5 - Generate statistics \n6 - Isolation Forest Model \n7 - Complete scans")
+        print("\n===Available Commands=== \n\n0 - Quit \n1 - Select a file \n2 - Show logs\
+              \n3 - Port scans\n4 - Detect anomalies \n5 - Generate statistics\
+              \n6 - Isolation Forest Model \n7 - Detect DGA \n8 - Complete scans")
         command = input(">>> : ")
         match command.lower():
             case "q" | "0":
@@ -199,7 +202,9 @@ if __name__ == "__main__":
                     continue
                 forest(dataFrame)
                 
-            case "7":  # Complete scans
+            case "7":  # Detect DGA 
+                print("Detect DGA")
+            case "8":  # Complete scans
                 if dataFrame.empty:
                     print("The DataFrame is empty.")
                     print("Use the 'select' command.")

@@ -50,10 +50,27 @@ print(classification_report(y_test, clf.predict(X_test)))
 
 # === 4. TESTER UN DOMAINE PERSONNALISÉ ===
 
+# Liste pour stocker les résultats
+
+detection_logs = []
+
+def log_detection(domain, ip, is_dga, confidence):
+    detection_logs.append({
+        'domain': domain,
+        'ip': ip,
+        'is_dga': is_dga,
+        'confidence': round(confidence, 2)
+    })
+
+
 def detect_domain(domain, ip):
     feat = extract_features(domain)
     prediction = clf.predict([feat])[0]
     proba = clf.predict_proba([feat])[0][prediction]
+    
+    # Log result
+    # log_detection(domain, ip, int(prediction), proba)
+    
     if prediction == 1:
         print(f"⚠️ Domaine DGA détecté : {domain} IP : {ip} (confiance : {proba:.2f})")
     else:
@@ -72,6 +89,7 @@ dataFrame = pd.read_csv("data/sample.csv")
 dataFrame = dataFrame.dropna(subset=['DNS'])  # Supprime les valeurs NaN
 dataFrame = dataFrame[dataFrame['DNS'].str.strip() != ""]  # Supprime les valeurs vides ("")
 print(dataFrame.head())
+
 # === 2. Parcourir la colonne 'DNS' ===
 print("=== Parcours des domaines ===")
 for index, row in dataFrame.iterrows():
@@ -79,4 +97,9 @@ for index, row in dataFrame.iterrows():
     ip = row['src'] # A changer entre DNS ou domain
     detect_domain(domaine, ip)
     
+# === 3. Sauvegarde des résultats dans un fichier CSV
+results_df = pd.DataFrame(detection_logs)
+results_df.to_csv("data/detection_results.csv", index=False)
+print("📝 Résultats sauvegardés dans 'detection_results.csv'")
+
     
