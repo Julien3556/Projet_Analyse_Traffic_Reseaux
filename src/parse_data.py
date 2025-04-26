@@ -133,7 +133,7 @@ def convert_data(file):
     Exceptions:
         - ValueError: If the file has an unsupported extension.
     """
-    if file.endswith('.pcap'):
+    if file.endswith('.pcap') or file.endswith('.pcapng'):
         print("The current file is indeed a .pcap file.")
         return parse_pcap(file)
     elif file.endswith('.log'):
