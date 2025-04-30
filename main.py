@@ -136,8 +136,8 @@ def detect(dataFrame):
 
 def forest(dataFrame):
     try:
-        model = train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
-        anomalies = detect_anomalies(model, dataFrame, ['length', 'src_port', 'dst_port'])
+        model = isolation_forest.train_isolation_forest(dataFrame, ['length', 'src_port', 'dst_port'])
+        anomalies = isolation_forest.detect_anomalies(model, dataFrame, ['length', 'src_port', 'dst_port'])
         print(anomalies)
     except:
         print("Error in isolation_forest")
