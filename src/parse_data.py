@@ -52,14 +52,20 @@ def parse_pcap(file):
         - Extracts source/destination IPs, protocol, length, timestamp, ports, and other details.
         - Maps protocol numbers to protocol names.
         - Interprets TCP flags and DNS queries if available.
+        - Calculates connection durations for TCP connections.
         - Saves the extracted data to a CSV file.
 
     Returns:
         - pd.DataFrame: A DataFrame containing the extracted network packet information.
     """
     data = []
+    connections = {}  # Dictionnaire pour suivre les connexions TCP
     cap = ps.FileCapture(file)
-    output_file = f"{file[:-5]}.csv"
+    if file.endswith('.pcap'):
+        output_file = f"{file[:-5]}.csv"
+    elif file.endswith('.pcapng'):
+        output_file = f"{file[:-7]}.csv"
+
     for package in cap:
         if 'IP' in package:
             src = package.ip.src
@@ -67,20 +73,43 @@ def parse_pcap(file):
             proto_num = int(package.ip.proto)
             proto = protocol_map.get(proto_num, str(proto_num))
             length = int(package.length)
-            timestamp = package.sniff_time
+            timestamp = float(package.sniff_timestamp) if hasattr(package, 'sniff_timestamp') else None
             src_port = int(package[package.transport_layer].srcport) if hasattr(package, 'transport_layer') and package.transport_layer and hasattr(package[package.transport_layer], 'srcport') else None
             dst_port = int(package[package.transport_layer].dstport) if hasattr(package, 'transport_layer') and package.transport_layer and hasattr(package[package.transport_layer], 'dstport') else None
             conn_state = interpret_tcp_flags(int(package.tcp.flags, 16)) if 'TCP' in package and hasattr(package, 'tcp') else None
-            duration = package.tcp.time if 'TCP' in package and hasattr(package.tcp, 'time') else None
             dns = package.dns.qry_name if 'DNS' in package and hasattr(package.dns, 'qry_name') else None
-            data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state, duration, dns])
 
-    # Convert data to DataFrame
-    df = pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'duration', 'DNS'])
-    # Save to a file if an output filename is provided
+            # Suivi des connexions TCP
+            if proto == 'TCP' and src_port and dst_port:
+                conn_id = (src, dst, src_port, dst_port)
+                if conn_id not in connections:
+                    # Premier paquet de la connexion
+                    connections[conn_id] = {'start': timestamp, 'end': timestamp}
+                else:
+                    # Mettre à jour le timestamp de fin
+                    connections[conn_id]['end'] = timestamp
+                
+
+            # Ajouter les données du paquet
+            data.append([src, dst, proto, length, timestamp, src_port, dst_port, conn_state, dns])
+
+    # Calculer les durées des connexions
+    connection_durations = {}
+    for conn_id, times in connections.items():
+        connection_durations[conn_id] = times['end'] - times['start']
+
+    # Ajouter les durées au DataFrame
+    df = pd.DataFrame(data, columns=['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state', 'DNS'])
+    df['connection_duration'] = df.apply(
+        lambda row: connection_durations.get((row['src'], row['dst'], row['src_port'], row['dst_port']), None)
+        if row['proto'] == 'TCP' else None,
+        axis=1)
+    
+    # Sauvegarder les données dans un fichier CSV
     if output_file:
         df.to_csv(output_file, index=False)
-        print(f"Data saved to {output_file}")   
+        print(f"Data saved to {output_file}")
+    
     return df
 
 def parse_log(file):
@@ -133,7 +162,7 @@ def convert_data(file):
     Exceptions:
         - ValueError: If the file has an unsupported extension.
     """
-    if file.endswith('.pcap'):
+    if file.endswith('.pcap') or file.endswith('.pcapng'):
         print("The current file is indeed a .pcap file.")
         return parse_pcap(file)
     elif file.endswith('.log'):
@@ -143,5 +172,5 @@ def convert_data(file):
         raise ValueError('Unsupported file type')
 
 if __name__ == '__main__':
-    data = convert_data('data/sample.pcap')
+    data = convert_data('data/tcp-traceroute.pcapng')
     print(data.sample(20))
