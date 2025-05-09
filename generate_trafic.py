@@ -118,9 +118,9 @@ if __name__ == "__main__":
         - Starts threads for generating TCP, UDP, and ICMP traffic.
         - Waits for the threads to complete (infinite loop).
     """
-    target_ip = "192.168.254.131"  # Target IP address
-    ports = list(range(1000, 2000))  # Range of ports to use
-    interval = 0.01  # Interval between packets (in seconds)
+    target_ip = "127.0.0.1"  # Target IP address
+    ports = list(range(1000, 6000))  # Range of ports to use
+    interval = 0.05  # Interval between packets (in seconds)
 
     # Start threads to generate different types of traffic
     tcp_thread = threading.Thread(target=generate_tcp_traffic, args=(target_ip, ports, interval))

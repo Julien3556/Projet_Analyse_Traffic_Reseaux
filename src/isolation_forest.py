@@ -70,7 +70,7 @@ if __name__ == '__main__':
         - Detects anomalies in the data using the trained model.
         - Prints the detected anomalies.
     """
-    from src.parse_data import convert_data  # Import convert_data function
+    from parse_data import convert_data  # Import convert_data function
 
     # Load data
     data = convert_data('data/conn_sample.log')
