@@ -1,4 +1,14 @@
 @startuml
+database "data"{
+    frame "pcap"{
+    }
+    frame "log"{
+    }
+    frame "csv"{
+    }
+    frame "pkl"{
+    }
+}
 
 package src{
     object basic_stat{
@@ -46,9 +56,10 @@ package src{
     }
 } 
 
-database "data"{
-    [pcap]
-}
+
+
+    
+
 
 object main{
     __Global variable__
