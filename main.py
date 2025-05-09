@@ -194,8 +194,12 @@ if __name__ == "__main__":
                     print("Use the 'select' command.")
                     continue
                 try:
-                    imput = int(input("Select the threshold : "))
-                    detect_scan_port.scans(dataFrame, imput)
+                    include_rejected = input("Include rejected connections? (y/N):")
+                    include_rejected = False
+                    if include_rejected == "y":
+                        include_rejected = True
+                    threshold = int(input("Select the threshold : "))
+                    detect_scan_port.scans(dataFrame, threshold)
                 except:
                     print("Error in detect_scan_port")
 
@@ -234,7 +238,12 @@ if __name__ == "__main__":
                     continue
                 
                 print("\nPort scans")
-                imput = int(input("Select the threshold : "))
+                include_rejected = input("Include rejected connections? (y/N):")
+                include_rejected = False
+                if include_rejected == "y":
+                    include_rejected = True
+                threshold = int(input("Select the threshold : "))
+                detect_scan_port.scans(dataFrame, threshold)
                 detect_scan_port.scans(dataFrame, imput)
                 
                 print("\nDetect anomalies")
