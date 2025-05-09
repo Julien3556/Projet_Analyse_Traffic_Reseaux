@@ -1,4 +1,4 @@
-@startuml
+@startuml UML
 database "data"{
     frame "pcap"{
     }
@@ -99,7 +99,5 @@ live_analysis --> src : "use"
 generate_trafic --> src : "use"
 
 main --> data : "use"
- 'aaa
-
 
 @enduml
