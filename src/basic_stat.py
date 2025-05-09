@@ -47,16 +47,25 @@ def ip_connexionTime(dataFrame, limit):
     Returns:
         - None
     """
-    connexionTime = dataFrame.groupby("src")["duration"].max()
-    connexionTime = connexionTime[connexionTime > limit]
+    try:
+        if "src" not in dataFrame.columns or "duration" not in dataFrame.columns:
+            raise ValueError("The DataFrame must contain 'src' and 'duration' columns.")
+        connexionTime = dataFrame.groupby("src")["duration"].max()
+        connexionTime = connexionTime[connexionTime > limit]
+        if connexionTime.empty:
+            print("No IP addresses found with a maximum connection duration above the specified limit.")
+            return
 
-    connexionTime.plot(kind="bar", color="skyblue", edgecolor="black")
-    plt.xlabel("Source IP address")
-    plt.ylabel("Maximum connection duration")
-    plt.title("Connection duration per IP address")  
-    plt.xticks(rotation=45, fontsize=6)  
-    plt.grid(axis="y", linestyle="--", alpha=0.7)  
-    plt.show()
+        connexionTime.plot(kind="bar", color="skyblue", edgecolor="black")
+        plt.xlabel("Source IP address")
+        plt.ylabel("Maximum connection duration")
+        plt.title("Connection duration per IP address")  
+        plt.xticks(rotation=45, fontsize=6)  
+        plt.grid(axis="y", linestyle="--", alpha=0.7)  
+        plt.show()
+
+    except Exception as e:
+        print(f"An error occurred in ip_connexionTime: {e}")
 
 
 def destPort_nbConnexion(dataFrame, limit):
@@ -101,16 +110,26 @@ def maxLength_ip(dataFrame, limit):
     Returns:
         - None
     """
-    ip_connexions = dataFrame.groupby("src")["length"].max()
-    ip_connexions = ip_connexions[ip_connexions < limit]
+    try:
+        if "src" not in dataFrame.columns or "length" not in dataFrame.columns:
+            raise ValueError("The DataFrame must contain 'src' and 'length' columns.")
+        ip_connexions = dataFrame.groupby("src")["length"].max()
+        ip_connexions = ip_connexions[ip_connexions > limit]
 
-    ip_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
-    plt.xlabel("IP of packet's transmitter")  
-    plt.ylabel("Maximum size of transmitted packets")  
-    plt.title("Maximum packet size per user")  
-    plt.xticks(rotation=45, fontsize=6)  
-    plt.grid(axis="y", linestyle="--", alpha=0.7)  
-    plt.show()
+        if ip_connexions.empty:
+            print("No IP addresses found with a maximum packet size above the specified limit.")
+            return
+
+        ip_connexions.plot(kind="bar", color="skyblue", edgecolor="black")
+        plt.xlabel("IP of packet's transmitter")  
+        plt.ylabel("Maximum size of transmitted packets")  
+        plt.title("Maximum packet size per user")  
+        plt.xticks(rotation=45, fontsize=6)  
+        plt.grid(axis="y", linestyle="--", alpha=0.7)  
+        plt.show()
+
+    except Exception as e:
+        print(f"An error occurred in maxLength_ip: {e}")
 
 
 if __name__ == '__main__':
