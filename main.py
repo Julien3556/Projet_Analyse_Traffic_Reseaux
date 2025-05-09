@@ -48,9 +48,11 @@ Available commands:
 - DGA: Run Domain Generation Algorithm detection
 - complete scans: Execute a full suite of analysis tasks
 """
-
 # Default file:
 file = 'data/conn_sample.csv'
+
+# Initialize a DataFrame
+dataFrame = pd.DataFrame()
 
 def stats(dataFrame):
     while True:
@@ -128,11 +130,10 @@ def detect(dataFrame):
             print("",proto, end='') 
         print("")
         proto = input("Protocol to analyze: ").lower().strip()
-        data = parse_data.convert_data(file)
 
         if proto in protocols:
             print(f"✅ Protocol selected: {proto}")
-            anomalies = detect_anomalies.detect_anomalies(data, 'length', filter=f'proto == \"{proto}\"')
+            anomalies = detect_anomalies.detect_anomalies(dataFrame, 'length', filter=f'proto == \"{proto}\"')
             print(anomalies)
         else:
             print(f"❌ Error: Protocol '{proto}' is invalid. Available protocols: {', '.join(protocols)}")
