@@ -93,5 +93,12 @@ object live_analysis{
     Program launcher
 }
 
+' Dépendances
+main --> src : "use"
+live_analysis --> src : "use"
+generate_trafic --> src : "use"
+
+main --> data : "use"
+
 
 @enduml
