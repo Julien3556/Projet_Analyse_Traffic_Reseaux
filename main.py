@@ -8,45 +8,49 @@ import src.detect_DGA as detect_DGA
 import os
 
 """
-Libraries to install:
-- pandas
-- scikit-learn
-- pyshark
-- matplotlib
-"""
+This script provides a command-line interface to analyze network traffic files
+(.pcap, .pcapng, .log, .csv) using various anomaly detection techniques.
 
-# Define column names
-# columns = ['src', 'dst', 'proto', 'length', 'timestamp', 'src_port', 'dst_port', 'conn_state']
+Required libraries:
+- pandas: for handling tabular data
+- scikit-learn: for machine learning algorithms (e.g., Isolation Forest)
+- pyshark: for parsing .pcap files
+- matplotlib: for data visualization
+
+Custom modules required (must be located in the `src/` directory):
+- detect_scan_port: detects port scanning activity
+- parse_data: converts raw data files into a usable DataFrame
+- detect_anomalies: detects anomalies based on protocols
+- basic_stat: generates statistics and visualizations
+- isolation_forest: performs anomaly detection using Isolation Forest
+- detect_DGA: detects Domain Generation Algorithm (DGA) domains
+
+Main features:
+- File selection for analysis
+- File conversion to a usable format (pandas DataFrame)
+- Display of parsed data
+- Port scan detection
+- Statistical analysis (ports, durations, sizes, connections, etc.)
+- Anomaly detection based on selected protocol
+- DGA domain detection
+- Anomaly detection using Isolation Forest
+
+Available commands:
+- quit | q: Exit the program
+- show: Display the first few lines of the DataFrame
+- select: Allow the user to choose a file to analyze
+- detect_scan_port: Run port scan detection
+- convert: Convert and preview the selected file if necessary
+- http: Detect suspicious HTTP activity (note: not implemented in this script)
+- stats: Generate various network statistics
+- detect: Detect anomalies in network packets
+- forest: Run Isolation Forest for anomaly detection
+- DGA: Run Domain Generation Algorithm detection
+- complete scans: Execute a full suite of analysis tasks
+"""
 
 # Default file:
 file = 'data/conn_sample.csv'
-
-# Initialize a DataFrame
-dataFrame = pd.DataFrame()
-# print(dataFrame)
-
-"""
-Code Documentation
-
-This code uses a match-case structure to execute different commands based on user input.
-
-Available commands:
-- quit | q: Exits the program and displays a logout message.
-- show: Displays the first lines of the DataFrame.
-- select: Allows the user to select a file by typing its name.
-- detect_scan_port: Performs a port scan on the DataFrame data via the Scans class.
-- convert: Converts the selected file's data and displays a 20-row sample.
-- http: Detects suspicious HTTP activity in the DataFrame.1
-- _: Displays an error message if the command is unknown.
-
-Dependencies:
-- pandas (pd) for data handling
-- detect_scan_port for port scans
-- parse_data for data conversion
-- detect_anomalies for anomaly detection
-- basic_stat for statistics and graph generation
-- os for file handling
-"""
 
 def stats(dataFrame):
     while True:
@@ -155,9 +159,6 @@ def DGA(dataFrame):
         detect_DGA.run_DGA_detection(dataFrame, file, view)
     except:
         print("Error in detect_DGA")
-
-if __name__ == "__main__":
-        print("Error in isolation forest")
 
 if __name__ == "__main__":
     if dataFrame.empty:
