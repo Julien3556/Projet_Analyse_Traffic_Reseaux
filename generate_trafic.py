@@ -120,7 +120,7 @@ if __name__ == "__main__":
     """
     target_ip = "127.0.0.1"  # Target IP address
     ports = list(range(1000, 6000))  # Range of ports to use
-    interval = 0.01  # Interval between packets (in seconds)
+    interval = 0.05  # Interval between packets (in seconds)
 
     # Start threads to generate different types of traffic
     tcp_thread = threading.Thread(target=generate_tcp_traffic, args=(target_ip, ports, interval))

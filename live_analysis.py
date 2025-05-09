@@ -49,7 +49,8 @@ def live_detect_scan(interface='eth0'):
         while True:
             batch = []
             while len(batch) < batch_size:
-                packet_info = packet_queue.get(timeout=1)  # Blocks until a packet is available
+                packet_info = packet_queue.get()
+                print(f"Packet captured: {packet_info}")
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
@@ -87,7 +88,7 @@ def live_detect_scan(interface='eth0'):
         for packet in capture.sniff_continuously(packet_count=None):
             packet_info = analyze_packet(packet)
             if packet_info:
-                packet_queue.put(packet_info)  # Add the packet to the queue
+                packet_queue.put(packet_info)
     except KeyboardInterrupt:
         print("\nInterrupt detected. Stopping capture...")
     finally:
