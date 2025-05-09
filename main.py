@@ -56,6 +56,7 @@ def stats(dataFrame):
         \n2 - Maximum connection duration per source IP address \
         \n3 - Number of connections to each destination port \
         \n4 - Maxium size above all the packet transmitted per user\n>>> : ")
+        print("Select the statistics to generate: \n0 - Quit \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user\n")
         choice = input(">>> : ")
         match choice :
             case "q" | "0":
@@ -156,6 +157,9 @@ def DGA(dataFrame):
         print("Error in detect_DGA")
 
 if __name__ == "__main__":
+        print("Error in isolation forest")
+
+if __name__ == "__main__":
     if dataFrame.empty:
         print("The DataFrame is empty.")
         print("Use the 'select' command.")
@@ -183,12 +187,20 @@ if __name__ == "__main__":
                     print("Error in select")
 
             case "2":  # Show
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 try:
                     print(dataFrame.head())
                 except:
                     print("Use the 'select' command to create a DataFrame first.")
 
             case "3":  # Port scans
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 if dataFrame.empty:
                     print("The DataFrame is empty.")
                     print("Use the 'select' command.")
@@ -208,6 +220,10 @@ if __name__ == "__main__":
                     print("The DataFrame is empty.")
                     print("Use the 'select' command.")
                     continue
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 detect(dataFrame)
 
             case "5":  # Statistics
@@ -215,9 +231,17 @@ if __name__ == "__main__":
                     print("The DataFrame is empty.")
                     print("Use the 'select' command.")
                     continue          
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue          
                 stats(dataFrame)
 
             case "6":  # Isolation Forest
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
                 if dataFrame.empty:
                     print("The DataFrame is empty.")
                     print("Use the 'select' command.")
@@ -232,6 +256,11 @@ if __name__ == "__main__":
                 DGA(dataFrame)
 
             case "8":  # Complete scans
+                if dataFrame.empty:
+                    print("The DataFrame is empty.")
+                    print("Use the 'select' command.")
+                    continue
+            case "7":  # Complete scans
                 if dataFrame.empty:
                     print("The DataFrame is empty.")
                     print("Use the 'select' command.")
