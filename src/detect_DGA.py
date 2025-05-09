@@ -18,7 +18,7 @@ def run_DGA_detection(dataFrame, file_name, view=False):
     Returns:
         None
     """
-    # === 1. GÉNÉRER UN JEU DE DONNÉES SIMULÉ ===
+    # === 1. GENERATE A SIMULATED DATASET ===
     # Generate a simulated dataset of legitimate and DGA domains.
 
     # Examples of legitimate domains
@@ -45,7 +45,7 @@ def run_DGA_detection(dataFrame, file_name, view=False):
     all_domains = dga_domains + legit_domains_extended
     labels = [1] * len(dga_domains) + [0] * len(legit_domains_extended)  # 1 = DGA, 0 = legitimate
 
-    # === 2. EXTRAIRE DES CARACTÉRISTIQUES ===
+    # === 2. EXTRACT FEATURES ===
     # Extract features from domain names for classification.
 
     def extract_features(domain):
@@ -69,7 +69,7 @@ def run_DGA_detection(dataFrame, file_name, view=False):
     # Extract features for all domains
     features_X = [extract_features(d) for d in all_domains]
 
-    # === 3. ENTRAÎNER LE MODÈLE ===
+    # === 3. TRAIN THE MODEL ===
     # Train a Random Forest classifier on the extracted features.
 
     X_train, X_test, y_train, y_test = train_test_split(features_X, labels, test_size=0.2, random_state=42)
@@ -77,10 +77,10 @@ def run_DGA_detection(dataFrame, file_name, view=False):
     clf = RandomForestClassifier(n_estimators=100, random_state=42)
     clf.fit(X_train, y_train)
 
-    print("=== ÉVALUATION DU MODÈLE ===")
+    print("=== MODEL EVALUATION ===")
     print(classification_report(y_test, clf.predict(X_test)))
 
-    # === 4. TESTER UN DOMAINE PERSONNALISÉ ===
+    # === 4. TEST A CUSTOM DOMAIN ===
     # Detect individual domains and log results.
 
     detection_logs = []  # List to store detection results
@@ -129,7 +129,7 @@ def run_DGA_detection(dataFrame, file_name, view=False):
             else:
                 print(f"✅ Normal domain : {domain} IP : {ip} (confidence : {proba:.2f})")
 
-    # === 5. PARCOURIR LE DATAFRAME ===
+    # === 5. PROCESS THE DATAFRAME ===
     # Process the input DataFrame and detect domains.
 
     # Drop rows with missing or empty 'DNS' values
@@ -148,7 +148,7 @@ def run_DGA_detection(dataFrame, file_name, view=False):
         ip = row['src']  # Change between 'src' or other column as needed
         detect_domain(domaine, ip)
 
-    # === 6. SAUVEGARDE DES RÉSULTATS ===
+    # === 6. SAVE RESULTS ===
     # Save detection results to a CSV file.
 
     results_df = pd.DataFrame(detection_logs)

@@ -24,7 +24,7 @@ def ip_nbPort(dataFrame, limit):
     print(port_scan_attempts)
 
     port_scan_attempts.plot(kind="bar", color="skyblue", edgecolor="black")
-    plt.xlabel("Source IP address")  
+    plt.xlabel("Source IP address") 
     plt.ylabel("Number of distinct ports contacted")  
     plt.title("Number of connection attempts per IP address")  
     plt.xticks(rotation=45, fontsize=6)  
