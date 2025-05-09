@@ -49,7 +49,7 @@ Dependencies:
 
 def stats(dataFrame):
     while True:
-        print("Select the statistics to generate: \n0 - Quit \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user\n>>> : ")
+        print("Select the statistics to generate: \n0 - Quit \n1 - Number of distinct ports contacted by each source IP address \n2 - Maximum connection duration per source IP address \n3 - Number of connections to each destination port \n4 - Maxium size above all the packet transmitted per user\n")
         choice = input(">>> : ")
         match choice :
             case "q" | "0":
