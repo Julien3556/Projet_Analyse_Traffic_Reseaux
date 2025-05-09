@@ -1,0 +1,86 @@
+@startuml
+
+package src{
+    object basic_stat{
+        __Functions__
+        ip_nbPort(dataFrame : pandas.DataFrame, limit : int)
+        ip_connexionTime(dataFrame : pandas.DataFrame, limit : int)
+        destPort_nbConnexion(dataFrame : pandas.DataFrame, limit : int)
+        maxLength_ip(dataFrame : pandas.DataFrame, limit : int)
+    }
+
+    object detect_anomalies{
+        __Functions__
+        detect_anomalies(data : pandas.DataFrame, column : int, threshold : bool, filter : bool)
+    }
+
+    object detect_DGA{
+        __Functions__
+        run_DGA_detection(dataFrame : pandas.DataFrame, file_name : str, view : bool)
+        generate_dga_domain()
+        extract_features(domain : str)
+        log_detection(domain : str, ip : str, is_dga : int, confidence : float)
+        detect_domain(domain : str, ip : int)
+    }
+
+    object detect_scan_port{
+        __Functions__
+        scans(dataFrame : pandas.DataFrame, threshold : int)
+    }
+
+    object isolation_forest{
+        __Functions__
+        train_isolation_forest(data : pandas.DataFrame, features : list)
+        detect_anomalies(model : IsolationForest, data : pandas.DataFrame, features : list)
+        load_model(filename : str)
+    }
+
+    object parse_data{
+        __Global variable__
+        protocol_map : dict[int, str]
+        __Functions__
+        interpret_tcp_flags(flags : int)
+        parse_pcap(file : str)
+        parse_log(file : str)
+        convert_data(file : str)
+    }
+} 
+
+database "data"{
+    [pcap]
+}
+
+object main{
+    __Global variable__
+    default_file : string
+    __Functions__
+    stats(dataFrame : pandas.DataFrame)
+    select()
+    detect(dataFrame : pandas.DataFrame)
+    forest(dataFrame : pandas.DataFrame)
+    DGA(dataFrame : pandas.DataFrame)
+    __Procedural programming__
+    Program launcher
+}
+
+object generate_trafic{
+    __Functions__
+    generate_tcp_traffic(target_ip : str, ports : list, interval : float)
+    generate_udp_traffic(target_ip : str, ports : list, interval : float)
+    generate_icmp_traffic(target_ip : str, ports : list, interval : float)
+    generate_random_traffic(target_ip : str, ports : list, interval : float)
+    __Procedural programming__
+    Program launcher
+}
+
+object live_analysis{
+    __Functions__
+    analyze_packet(packet : PCAP line)
+    live_detect_scan(interface : str)
+    analyze()
+    __Procedural programming__
+    Program launcher
+}
+
+
+@enduml
