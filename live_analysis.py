@@ -1,7 +1,6 @@
 import pyshark
 import pandas as pd
 from src.parse_data import *
-from src.basic_stat import ip_nbPort, ip_connexionTime, destPort_nbConnexion, maxLength_ip
 from src.detect_anomalies import detect_anomalies  # Import de la fonction pour détecter les anomalies
 import threading
 from queue import Queue
@@ -50,7 +49,6 @@ def live_detect_scan(interface='eth0'):
             batch = []
             while len(batch) < batch_size:
                 packet_info = packet_queue.get()
-                print(f"Packet captured: {packet_info}")
                 batch.append(packet_info)
             # Process the batch of packets
             df = pd.DataFrame(batch)
@@ -63,19 +61,14 @@ def live_detect_scan(interface='eth0'):
                 port_scan_anomalies = detect_anomalies(df, column='dst_port', threshold=100)
                 if not port_scan_anomalies.empty:
                     print("\n=== Scans de ports détectés ===")
-                    print(port_scan_anomalies)
+                    print(port_scan_anomalies.head(10))
 
                 # Détection de transferts volumineux
-                data_anomalies = detect_anomalies(df, column='length')
+                data_anomalies = detect_anomalies(df, column='length', threshold=1000)
                 if not data_anomalies.empty:
                     print("\n=== Transferts de données suspects ===")
-                    print(data_anomalies)
-                    
-                # Analyse des connexions par IP
-                IP_anomalies = detect_anomalies(df, column='src')
-                if not IP_anomalies.empty:
-                    print("\n=== Anomalies de connexion par IP ===")
-                    print(IP_anomalies)
+                    print(data_anomalies.head(10))
+
                     
             except Exception as e:
                 print(f"Error processing data for anomaly detection: {e}")
